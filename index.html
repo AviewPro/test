@@ -30,7 +30,7 @@
             -webkit-user-select: none;
         }
 
-        /* 버전 표기 스타일 */
+        /* 버전 표기 스타일 - 폰트 크기 2배 확대 유지 */
         #version-tag {
             position: fixed;
             bottom: 1.5vh;
@@ -197,6 +197,7 @@
             animation: floatingCat 4s infinite ease-in-out;
         }
         
+        /* 고양이 둥실둥실 애니메이션 */
         @keyframes floatingCat {
             0%, 100% { transform: translateY(0) rotate(0deg); }
             50% { transform: translateY(-3vh) rotate(2deg); }
@@ -238,64 +239,58 @@
         @keyframes slide-h { from { transform: translateX(-150%); } to { transform: translateX(150vw); } }
         @keyframes slide-v { from { transform: translateY(150vh); } to { transform: translateY(-150%); } }
 
-        /* --- 모바일 세로 배치 강제 최적화 --- */
+        /* --- 모바일 환경 최적화 코드 수정본 (기능 보완) --- */
         @media screen and (max-width: 768px) {
             body {
-                overflow-y: auto !important; /* 세로 스크롤 명시적 허용 */
-                justify-content: flex-start !important;
-                padding: 4vh 0;
-                min-height: 100vh;
+                overflow-y: auto !important; /* 모바일에서만 세로 스크롤 허용 */
+                justify-content: flex-start;
+                padding-top: 3vh;
             }
 
             .game-container {
-                flex-direction: column !important; /* 무조건 세로 배치 */
-                height: auto !important;
-                width: 95% !important;
-                gap: 3vh !important;
-                align-items: center !important;
-                justify-content: flex-start !important;
-                display: flex !important;
+                flex-direction: column !important; /* 강제 세로 배치 */
+                height: auto !important; /* 고정 높이 해제 */
+                gap: 2vh;
+                padding-bottom: 8vh;
             }
 
             #game-box, #info-panel {
-                width: 95vw !important; /* 화면 너비에 맞춤 */
-                height: auto !important;
-                min-height: 72vh !important; /* 판넬 크기 유지 */
-                flex-shrink: 0 !important;
-                margin-bottom: 2vh;
+                width: 92vw !important; /* 화면 너비에 맞게 조정 */
+                height: auto !important; /* 내용에 맞게 높이 가변 */
+                min-height: 65vh; /* 최소 높이 보장 */
+                flex-shrink: 0;
             }
 
-            /* 셋업 화면 최적화 */
             #setup {
-                width: 90vw !important;
+                width: 92vw !important;
                 height: auto !important;
-                min-height: 60vh !important;
-                padding: 4vh 2vh !important;
+                padding: 4vh 2vh;
+                min-height: 70vh;
             }
+
             .setup-cat, .setup-btn, .tutorial-btn, .new-keyhole {
                 width: 80vw !important;
+                max-width: 350px;
             }
 
             .header-title {
-                font-size: 3.5vh !important;
-                letter-spacing: 0.5vh !important;
-                padding: 1vh 2vh !important;
+                font-size: 3.2vh !important;
+                letter-spacing: 0.4vh !important;
+                width: 90%;
             }
 
-            /* 판넬 내 요소 간격 조정 */
-            .chance-area {
-                height: auto !important;
-                flex-direction: row !important;
-                gap: 1vh !important;
+            #cand-list {
+                max-height: 35vh !important; /* 리스트 영역 최적화 */
             }
-            #chance-box { height: 14vh !important; }
-            .prob-cat-container { width: 14vh !important; height: 14vh !important; }
-            
-            /* 엔딩 화면 및 팁 박스 최적화 */
-            .panel-center, .tutorial-msg-box {
+
+            .panel-center {
                 width: 90vw !important;
+                padding: 3vh !important;
             }
-            #obs-num { width: 70vw !important; }
+
+            #obs-num {
+                width: 80% !important;
+            }
         }
     </style>
 </head>
@@ -819,7 +814,7 @@
             statusEl.style.color = "var(--red)";
         } else {
             entBtn.disabled = false;
-            statusEl.innerText = "양자고양이 좌표 측정 중...";
+            statusEl.innerText = "양자고양이 위치 관측 중...";
             statusEl.style.color = "var(--cyan)";
         }
     }
@@ -951,7 +946,7 @@
                     <div id="tut-esc-guide" class="esc-guide" style="display:none;"></div>
                 </div>
             </div>
-            <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100vh; text-align:center; box-sizing: border-box; position:relative; z-index:50;">
+            <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:100vh; text-align:center; box-sizing: border-box; position:relative; z-index:50; padding: 5vh 0;">
                 <img src="${mediaUrl}" style="border:0.4vh solid ${color}; border-radius:4vh; box-shadow: 0 0 3vh ${color}; width: 45vh; height: 45vh; object-fit: cover; margin-bottom: 2vh;">
                 <h1 style="font-size:7vh; color:${color}; margin: 1vh 0; text-shadow:0 0 2vh ${color};">${type}</h1>
                 <h2 style="font-size:4vh; color:#fff; margin-bottom: 1vh;">${result}</h2>
@@ -1043,10 +1038,10 @@
         const turnCounter = document.getElementById('turn-counter');
         if(turnCounter) {
             if (turnCount > 0) {
-                const intensity = (turnCount) * 1.5; 
+                const intensity = (turnCount) * 15; 
                 const tMoveX = (Math.random()-0.5) * intensity;
                 const tMoveY = (Math.random()-0.5) * intensity;
-                turnCounter.style.transform = `translate(${tMoveX}vh, ${tMoveY}vh)`;
+                turnCounter.style.transform = `translate(${tMoveX}px, ${tMoveY}px)`;
             } else { turnCounter.style.transform = `translate(0px, 0px)`; }
         }
     }, 2000);
