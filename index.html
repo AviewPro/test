@@ -10,10 +10,10 @@
             --unit: 1vh; 
         }
         
-        /* 모바일 스크롤 허용을 위해 height와 overflow 수정 */
         html, body {
             min-height: 100%;
             overflow-x: hidden;
+            /* 기본적으로 세로 스크롤 허용 */
             overflow-y: auto;
         }
 
@@ -247,24 +247,32 @@
         @media screen and (max-width: 768px) {
             body { 
                 justify-content: flex-start; 
-                padding: 5vh 0; 
+                padding: 3vh 0; 
                 height: auto; 
             }
             .game-container { 
-                flex-direction: column; 
-                height: auto; 
+                flex-direction: column !important; /* 무조건 세로 배치 */
+                height: auto !important; /* 높이 제한 해제 */
                 width: 90%; 
                 gap: 5vh; 
-                padding-bottom: 10vh; 
+                padding-bottom: 20vh; /* 아래쪽 여유 공간 추가 */
+                overflow: visible;
             }
             #game-box, #info-panel { 
                 width: 100%; 
                 height: 75vh; 
                 flex-shrink: 0; 
+                display: none; /* 게임 시작 전에는 안 보임 */
             }
+            /* 게임이 시작되어 'flex'가 되었을 때의 설정 */
+            #game-box[style*="display: flex"], 
+            #info-panel[style*="display: flex"] {
+                display: flex !important;
+            }
+            
             #setup { 
                 width: 100%; 
-                height: auto; 
+                height: 72vh; /* 메인 화면은 기존 비율 유지 */
                 padding: 5vh 2vh; 
             }
             .setup-cat, .setup-btn, .tutorial-btn, .setup-box-container { 
