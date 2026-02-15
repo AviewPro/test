@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>Schrödinger Baseball - Single Mode</title>
+    <style>
+        :root { --bg: #050507; --cyan: #00f2ff; --purple: #bc13fe; --green: #00ff41; --red: #ff4b2b; }
+        
+        body { 
+            background: linear-gradient(rgba(5, 5, 7, 0.8), rgba(5, 5, 7, 0.8)), 
+                        url('https://cdn.discordapp.com/attachments/1471931935969247347/1472127315159814236/cat_footage.gif?ex=699170e6&is=69901f66&hm=a3fa277a23da4f06c8052da1d73b1170dcf1e631a6f4dc7c24cad33f2ff04bcb&');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            color: #fff; 
+            font-family: 'Segoe UI', sans-serif; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: flex-start; 
+            min-height: 100vh; 
+            margin: 0; 
+            overflow-x: hidden; 
+            overflow-y: auto; 
+            padding-top: 20px; 
+            user-select: none;
+            -webkit-user-select: none;
+        }
+        
+        #sound-control { position: fixed; right: 20px; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; align-items: center; gap: 10px; background: rgba(0,0,0,0.7); padding: 15px 10px; border-radius: 30px; border: 1px solid var(--cyan); z-index: 3000; }
+        #sound-control input[type=range] { writing-mode: bt-lr; -webkit-appearance: slider-vertical; width: 8px; height: 150px; cursor: pointer; }
+        .sound-icon { font-size: 1.2rem; color: var(--cyan); }
+
+        .title-wrapper { position: relative; margin-bottom: 30px; z-index: 300; display: flex; justify-content: center; align-items: center; }
+        .title-bg { position: absolute; background: rgba(0, 0, 0, 0.7); width: 120%; height: 120%; border-radius: 15px; filter: blur(5px); z-index: -1; }
+        .header-title { font-size: clamp(2rem, 6vw, 3.5rem); font-weight: bold; letter-spacing: 12px; text-shadow: 0 0 20px currentColor; animation: neonShift 10s infinite alternate linear; text-align: center; margin: 0; padding: 10px 40px; }
+        
+        @keyframes neonShift { 0% { color: var(--cyan); border-color: var(--cyan); box-shadow: 0 0 20px var(--cyan); } 100% { color: var(--purple); border-color: var(--purple); box-shadow: 0 0 20px var(--purple); } }
+        @keyframes neonShiftBg { 0% { background-color: var(--cyan); box-shadow: 0 0 15px var(--cyan); } 100% { background-color: var(--purple); box-shadow: 0 0 15px var(--purple); } }
+
+        @keyframes keyholeNeonShift { 
+            0% { filter: drop-shadow(0 0 15px var(--cyan)) drop-shadow(0 0 30px var(--cyan)); } 
+            100% { filter: drop-shadow(0 0 15px var(--purple)) drop-shadow(0 0 30px var(--purple)); } 
+        }
+
+        .game-container { display: flex; flex-wrap: wrap; gap: 30px; align-items: flex-start; justify-content: center; width: 95%; max-width: 1400px; padding-bottom: 50px; }
+        
+        #setup { width: 500px; height: 680px; padding: 40px; border-radius: 25px; background: rgba(10, 10, 15, 0.95); border: 3px solid var(--cyan); z-index: 200; text-align: center; box-sizing: border-box; box-shadow: 0 0 30px rgba(0, 242, 255, 0.3); display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        
+        .setup-box-container { position: relative; width: 330px; margin-bottom: 25px; }
+        .setup-cat { width: 330px; height: 330px; border-radius: 40px; border: 4px solid var(--green); object-fit: cover; animation: neonShift 10s infinite alternate linear; display: block; }
+        
+        .setup-btn { width: 330px; color: #000; font-weight: 900; height: 60px; font-size: 1.3rem; border-radius: 15px; cursor: pointer; border: none; animation: neonShiftBg 10s infinite alternate linear; }
+
+        .new-keyhole { width: 330px; height: auto; margin-top: 20px; animation: keyholeNeonShift 10s infinite alternate linear; }
+
+        #game-box, #info-panel { width: 500px; height: 700px; padding: 25px; border-radius: 25px; box-sizing: border-box; display: flex; flex-direction: column; }
+        #game-box { background: rgba(17, 17, 17, 0.9); border: 1px solid #333; position: relative; display: none; }
+        #info-panel { background: rgba(10, 10, 15, 0.9); border: 1px solid #333; display: none; }
+        
+        .status { text-align:center; color:var(--cyan); margin-bottom:15px; font-weight:bold; height:30px; font-size: 1.5rem; }
+        #log-window { flex-grow: 1; background: #000; overflow-y: auto; padding: 10px; font-family: 'Consolas', monospace; margin-bottom: 15px; border: 1px inset #222; display: grid; grid-template-columns: 1fr 1fr; grid-auto-rows: 65px; gap: 0px; align-content: start; }
+        .log-item { padding: 5px; display: flex; flex-direction: column; justify-content: center; background: rgba(0, 242, 255, 0.05); color: var(--cyan); border-bottom: 1px solid #222; position: relative; box-sizing: border-box; text-align: center; }
+        .log-item:nth-child(odd) { border-right: 1px solid #333; }
+        .log-n { font-size: 1.6rem; font-weight: bold; display: block; letter-spacing: 2px; }
+        .log-sb { font-weight: bold; font-size: 1.1rem; color: var(--purple); margin-top: 2px; }
+        .log-out { color: var(--red); text-shadow: 0 0 10px var(--red); }
+
+        .chance-area { display: flex; align-items: center; justify-content: space-between; margin-bottom: 25px; gap: 20px; height: 145px; position: relative; }
+        #chance-box { background: rgba(0,0,0,0.6); padding: 10px; border-radius: 20px; border: 2px solid var(--purple); text-align: center; flex: 1; height: 100%; display: flex; flex-direction: column; justify-content: center; box-sizing: border-box; transition: border-color 0.5s; z-index: 5; }
+        .chance-title { font-size: 1rem; color: var(--purple); font-weight: bold; display: block; margin-bottom: 5px; transition: color 0.5s, font-size 0.5s; }
+        .chance-value { font-size: 3.5rem; font-weight: 900; color: var(--purple); text-shadow: 0 0 25px var(--purple); font-family: 'Consolas', monospace; line-height: 1.1; transition: color 0.5s; }
+        .poison-text { font-size: 1.87rem; letter-spacing: -1px; line-height: 1.2; } 
+
+        .prob-cat-container { position: relative; width: 145px; height: 145px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; overflow: visible; }
+        .prob-cat { width: 100%; height: 100%; border-radius: 25px; border: 2px solid var(--purple); object-fit: cover; transition: opacity 0.5s, filter 0.5s, border-color 0.5s; box-sizing: border-box; z-index: 1; }
+        #turn-counter { position: absolute; font-weight: 900; font-size: 6rem; z-index: 20; pointer-events: none; white-space: nowrap; transition: color 0.5s, text-shadow 0.5s, transform 2s ease-in-out; will-change: transform; }
+
+        #candidates-box { flex-grow: 1; overflow: hidden; display: flex; flex-direction: column; }
+        .cand-title { font-size:1.2rem; color:#fff; margin-bottom:15px; font-weight:bold; text-align: center; padding: 10px 0; border-top: 1px solid #333; border-bottom: 1px solid #333; }
+        #cand-list { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; overflow-y: auto; font-family: 'Consolas', monospace; font-size: 1.4rem; color: #fff; padding-right: 5px; scrollbar-width: none; }
+        #cand-list::-webkit-scrollbar { display: none; }
+        .cand-item { padding: 8px; text-align: center; background: rgba(255,255,255,0.07); border-radius: 10px; transition: transform 2s ease-in-out, filter 0.5s, opacity 0.5s; will-change: transform, filter; }
+
+        .input-view { background: #000; font-size: 3rem; text-align: center; height: 75px; line-height: 75px; border-radius: 12px; margin-bottom: 20px; color: var(--cyan); border: 1px inset #222; letter-spacing: 12px; font-weight: bold; }
+        .keypad { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+        button { background: #222; border: none; color: #fff; padding: 15px 0; border-radius: 10px; cursor: pointer; font-size: 1.3rem; transition: 0.2s; box-shadow: 2px 2px 5px rgba(0,0,0,0.5); }
+        button:active { transform: translate(1px, 1px); }
+        button:disabled { opacity: 0.1; cursor: not-allowed; }
+        
+        .btn-clr { background: var(--cyan) !important; color: #000 !important; font-weight: bold; border: 2px solid rgba(255,255,255,0.4); box-shadow: inset 0 0 10px rgba(255,255,255,0.5), 0 0 15px var(--cyan); }
+        .btn-obs { background: var(--purple); color: #000; font-weight: bold; border: 2px solid rgba(255,255,255,0.2); box-shadow: inset 0 0 15px rgba(0,0,0,0.5), 0 0 15px var(--purple); }
+        .btn-ent { background: var(--green); color: #000; font-weight: bold; grid-row: span 2; border: 2px solid rgba(0,0,0,0.2); box-shadow: inset 0 0 15px rgba(255,255,255,0.3), 0 0 15px var(--green); }
+        
+        .overlay { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.96); flex-direction: column; align-items: center; justify-content: center; z-index: 1000; }
+        #quantum-field { position: absolute; width: 100%; height: 100%; top: 0; left: 0; overflow: hidden; pointer-events: none; z-index: 1001; }
+        .bg-candidate { position: absolute; font-family: 'Courier New', monospace; font-size: 1.8rem; font-weight: bold; animation: pulse 3.5s infinite ease-in-out; text-shadow: 0 0 10px currentColor; }
+        @keyframes pulse { 0%, 100% { opacity: 0.1; transform: scale(0.9); } 50% { opacity: 0.5; transform: scale(1.1); } }
+        .panel-center { position: relative; z-index: 1010; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; background: #0a0a0c; padding: 50px; border-radius: 40px; border: 2px solid var(--purple); width: min(500px, 90%); }
+    @media screen and (max-width: 768px) {
+            body {
+                overflow: auto; /* 모바일에서 세로 스크롤 허용 */
+                justify-content: flex-start;
+                padding-top: 2vh;
+            }
+
+            .game-container {
+                flex-direction: column; /* 가로 배치를 세로 배치로 변경 */
+                height: auto;
+                gap: 2vh;
+                padding-bottom: 5vh;
+            }
+
+            #game-box, #info-panel {
+                width: 90vw; /* 화면 너비에 맞춤 */
+                height: 70vh; /* 각 판넬의 높이 고정 */
+                flex-shrink: 0;
+            }
+
+            /* 우측 상단 정보(확률/턴카운트)가 잘 보이도록 영역 확보 */
+            .chance-area {
+                height: 14vh;
+                margin-bottom: 1vh;
+            }
+
+            /* 퀀텀 클라우드 드래그(스크롤) 가능하도록 설정 */
+            #candidates-box {
+                flex-grow: 1;
+                overflow: hidden; /* 박스 자체는 고정 */
+            }
+
+            #cand-list {
+                display: grid;
+                grid-template-columns: repeat(4, 1fr);
+                gap: 0.8vh;
+                overflow-y: auto; /* 내부에서 드래그(스크롤) 가능 */
+                max-height: 45vh; /* 드래그 영역 확보 */
+                -webkit-overflow-scrolling: touch; /* iOS 부드러운 스크롤 */
+                scrollbar-width: thin; /* 스크롤바 표시 (필요시) */
+            }
+
+            /* 모바일에서 버튼 클릭이 쉽도록 크기 미세 조정 */
+            .keypad button {
+                padding: 2.2vh 0;
+            }
+
+            .header-title {
+                font-size: 3.5vh; /* 제목 크기 축소 */
+                letter-spacing: 0.5vh;
+            }
+
+            #setup {
+                width: 90vw;
+                height: auto;
+                padding: 3vh;
+            }
+            
+            .setup-cat, .setup-btn, .tutorial-btn {
+                width: 70vw;
+            }
+        }
+</style>
+</head>
+<body oncontextmenu="return false" oncopy="return false" oncut="return false">
+
+<div id="sound-control">
+    <span class="sound-icon">♪</span>
+    <input type="range" id="volume-slider" min="0" max="1" step="0.01" value="0.15" oninput="adjustVolume(this.value)">
+    <span class="sound-icon" style="font-size:0.8rem;">VOL</span>
+</div>
+
+<div class="title-wrapper">
+    <div class="title-bg"></div>
+    <div class="header-title">SCHRÖDINGER BASEBALL</div>
+</div>
+
+<div id="setup">
+    <div class="setup-box-container">
+        <img src="https://cdn.discordapp.com/attachments/1471931935969247347/1471967030050554047/Neon_cat.gif?ex=6990db9f&is=698f8a1f&hm=099d4ffe81bc29858f02759047ad5728a3bffed1ad81fd11143f24d59e5d9007&" class="setup-cat">
+    </div>
+    <button onclick="startGame()" class="setup-btn">Start Single Mode (vs AI)</button>
+    <img src="https://cdn.discordapp.com/attachments/1471931935969247347/1472129705875472577/AMW1TPpNbcPHxslY-uRw7LHeiTlAEiLQ0X9myE579tYra-0e4VOjeq98RLnB9BTbP-xQqIReDNcvcRepnzsXdrZzMJThuX0IFchW2B4u6I3_0EsyV77Blbp0w6xb9V-w0SEuaJjAKiTTVwVjyDrthp8E44zWqDw-XH34ZMVvXgAcFOtXtQz-_AqFMqd-I8mNJ20zuXZXk4nks1PJfJbWOzxZf-520qv9ecJ1o3o8yZkuMAqcg3cqsDJYi49LzOII4qKSOo_cMAa6jLSvzauNWeick5XDzLH7K4r11Q.png?ex=69917320&is=699021a0&hm=aa79788f9cff46c38c4e39077e62c46cc16a81a4e9bb599fe1d6cfbe16917f22&" class="new-keyhole">
+</div>
+
+<div class="game-container">
+    <div id="game-box">
+        <div class="status" id="status">준비 완료</div>
+        <div id="log-window"></div>
+        <div class="input-view" id="display">----</div>
+        <div class="keypad" id="main-keypad">
+            <button onclick="press('7')">7</button><button onclick="press('8')">8</button><button onclick="press('9')">9</button>
+            <button id="obs-btn" class="btn-obs" onclick="clickObs()">OBS</button>
+            <button onclick="press('4')">4</button><button onclick="press('5')">5</button><button onclick="press('6')">6</button>
+            <button class="btn-clr" onclick="clearIn()">CLR</button>
+            <button onclick="press('1')">1</button><button onclick="press('2')">2</button><button onclick="press('3')">3</button>
+            <button id="ent-btn" class="btn-ent" onclick="clickEnter()">ENT</button>
+            <button style="grid-column: span 3" onclick="press('0')">0</button>
+        </div>
+    </div>
+
+    <div id="info-panel">
+        <div class="chance-area">
+            <div id="chance-box">
+                <span id="chance-title" class="chance-title">Measuring Energy Level</span>
+                <div id="chance-val" class="chance-value">--.--%</div>
+            </div>
+            <div class="prob-cat-container">
+                <div id="turn-counter">7</div>
+                <img id="prob-cat-img" src="https://cdn.discordapp.com/attachments/1471931935969247347/1471967030050554047/Neon_cat.gif?ex=6990db9f&is=698f8a1f&hm=099d4ffe81bc29858f02759047ad5728a3bffed1ad81fd11143f24d59e5d9007&" class="prob-cat">
+            </div>
+        </div>
+        <div id="candidates-box">
+            <div class="cand-title">Quantum Cloud</div>
+            <div id="cand-list"></div>
+        </div>
+    </div>
+</div>
+
+<div id="obs-overlay" class="overlay">
+    <div id="quantum-field"></div>
+    <div id="obs-input-container" class="panel-center">
+        <h2 style="color:var(--purple); font-size:3rem; margin-bottom:0;">Observation</h2>
+        <p style="color:var(--purple); font-size:1.2rem;">고양이 상자의 숫자를 관측하세요!</p>
+        <input type="text" id="obs-num" maxlength="4" style="background:#000; color:#fff; font-size:3.5rem; text-align:center; width:250px; margin:30px 0; border:3px solid var(--purple); border-radius:15px; letter-spacing:10px;">
+        <button onclick="submitObs()" style="padding:20px 70px; background:var(--purple); color:#fff; font-weight:bold; font-size:1.5rem; border-radius:15px;">관측 실행</button>
+    </div>
+</div>
+
+<script>
+    let aiCandidates = [], history = [], inputStr = "", turnCount = 7;
+    const bgm = new Audio("https://cdn.discordapp.com/attachments/1471931935969247347/1472065317822791813/002._ErikMMusic_-_The_Dusty_Attic.mp3?ex=69913729&is=698fe5a9&hm=e2772ad864c0d14a86305999c627b537204bf7a6d971e90b7fe6f5f1a8588cc0&");
+    bgm.loop = true;
+    bgm.playbackRate = 2.0;
+    const clickSfx = new Audio("https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3");
+    const meowSfx = new Audio("https://cdn.discordapp.com/attachments/1471931935969247347/1471932047802105927/moeeza3-kitten-cat-meow-437244.mp3?ex=699163cb&is=6990124b&hm=8253c2ec2e225d147fa9358b0d7319f23762439eef3e010b1efb77091bdb9ad2&");
+
+    function adjustVolume(val) { 
+        bgm.volume = val; 
+        meowSfx.volume = val; 
+        localStorage.setItem('quantum_volume', val); 
+    }
+    function playClick() { const sc = clickSfx.cloneNode(); sc.play().catch(e=>{}); if (bgm.paused) bgm.play().catch(e=>{}); }
+
+    function startGame() {
+        playClick();
+        document.getElementById('setup').style.display = 'none';
+        document.getElementById('game-box').style.display = 'flex';
+        document.getElementById('info-panel').style.display = 'flex';
+        aiCandidates = [];
+        for(let i=0; i<=9999; i++){
+            let n = i.toString().padStart(4, '0');
+            if(new Set(n).size === 4) aiCandidates.push(n);
+        }
+        updateUI();
+    }
+
+    function aiRespond(guess) {
+        const outcomes = {};
+        aiCandidates.forEach(cand => {
+            let s=0, b=0;
+            for(let i=0; i<4; i++){ if(guess[i] === cand[i]) s++; else if(cand.includes(guess[i])) b++; }
+            const key = `${s}S${b}B`;
+            if(!outcomes[key]) outcomes[key] = [];
+            outcomes[key].push(cand);
+        });
+        let bestKey = "";
+        let maxCount = -1;
+        for(let key in outcomes) {
+            if(key === "4S0B") continue; 
+            if(outcomes[key].length > maxCount) { maxCount = outcomes[key].length; bestKey = key; }
+        }
+        if(!bestKey || aiCandidates.length <= 1) {
+            const fakeS = Math.floor(Math.random() * 3);
+            const fakeB = Math.floor(Math.random() * 3);
+            bestKey = `${fakeS}S${fakeB}B`;
+            aiCandidates = aiCandidates.filter(c => c !== guess); 
+        } else { aiCandidates = outcomes[bestKey]; }
+        const match = bestKey.match(/(\d)S(\d)B/);
+        return { s: parseInt(match[1]), b: parseInt(match[2]) };
+    }
+
+    function updateUI() {
+        const turnCounter = document.getElementById('turn-counter');
+        turnCounter.innerText = turnCount;
+        const prob = aiCandidates.length === 0 ? 0 : (1 / aiCandidates.length * 100);
+        const chanceValEl = document.getElementById('chance-val');
+        const chanceTitleEl = document.getElementById('chance-title');
+        const chanceBoxEl = document.getElementById('chance-box');
+        const catImg = document.getElementById('prob-cat-img');
+        
+        if(aiCandidates.length === 0) {
+            chanceTitleEl.style.display = 'none';
+            chanceValEl.innerHTML = `<span class="poison-text" style="color:var(--green); text-shadow: 0 0 15px var(--green);">Cat is Poisoned<br>in the Box</span>`; 
+            chanceBoxEl.style.borderColor = 'var(--green)';
+            catImg.style.opacity = '0';
+            catImg.style.filter = 'blur(20px)';
+            turnCounter.style.color = 'var(--green)';
+            turnCounter.style.textShadow = '0 0 20px var(--green)';
+        } else {
+            chanceTitleEl.style.display = 'block';
+            chanceTitleEl.innerText = "Measuring Energy Level";
+            chanceValEl.innerText = prob.toFixed(2) + "%";
+            chanceTitleEl.style.color = 'var(--purple)';
+            chanceValEl.style.color = 'var(--purple)';
+            chanceBoxEl.style.borderColor = 'var(--purple)';
+            turnCounter.style.color = 'var(--purple)';
+            turnCounter.style.textShadow = '0 0 20px var(--purple)';
+            const blurAmount = Math.max(0, (prob * 0.5));
+            const opacityAmount = Math.max(0.1, 1 - (prob / 100));
+            catImg.style.display = 'block';
+            catImg.style.opacity = opacityAmount;
+            catImg.style.filter = `blur(${blurAmount}px)`;
+            catImg.style.borderColor = 'var(--purple)';
+            catImg.style.boxShadow = 'none';
+        }
+        
+        document.getElementById('log-window').innerHTML = history.map(h => {
+            const resultText = (h.s === 0 && h.b === 0) ? `<span class="log-out">OUT</span>` : `${h.s}S / ${h.b}B`;
+            return `<div class="log-item"><span class="log-n">${h.n}</span><span class="log-sb">${resultText}</span></div>`;
+        }).join('');
+        document.getElementById('log-window').scrollTop = document.getElementById('log-window').scrollHeight;
+
+        const slice = [...aiCandidates].sort(() => 0.5 - Math.random()).slice(0, 50);
+        const pixelateStrength = prob >= 25 ? 0 : (25 - prob) / 3.5; 
+        document.getElementById('cand-list').innerHTML = slice.map(c => `<div class="cand-item" style="filter: blur(${pixelateStrength}px) contrast(180%);">${c}</div>`).join('');
+
+        const entBtn = document.getElementById('ent-btn');
+        if(turnCount <= 0) {
+            entBtn.disabled = true;
+            document.getElementById('status').innerText = "측정 소진 (관측만 가능)";
+        } else {
+            entBtn.disabled = false;
+            document.getElementById('status').innerText = "고양이 위치 관측 중...";
+        }
+    }
+
+    function press(n) { playClick(); if(inputStr.length < 4 && !inputStr.includes(n)) { inputStr += n; document.getElementById('display').innerText = inputStr; } }
+    function clearIn() { playClick(); inputStr = ""; document.getElementById('display').innerText = "----"; }
+    
+    function clickEnter() {
+        if(inputStr.length === 4 && turnCount > 0) {
+            playClick();
+            const res = aiRespond(inputStr);
+            history.push({ n: inputStr, s: res.s, b: res.b });
+            turnCount--;
+            clearIn();
+            updateUI();
+        }
+    }
+
+    function renderProbabilityCloud() {
+        const field = document.getElementById('quantum-field');
+        field.innerHTML = "";
+        const neons = ['var(--cyan)', 'var(--purple)', 'var(--green)', 'var(--red)'];
+        const list = aiCandidates.length > 0 ? aiCandidates : ["ERROR", "VOID", "0000"];
+        list.slice(0, 80).forEach(num => {
+            const span = document.createElement('span');
+            span.className = 'bg-candidate';
+            span.innerText = num;
+            span.style.left = (Math.random() * 90 + 5) + "%";
+            span.style.top = (Math.random() * 90 + 5) + "%";
+            span.style.color = neons[Math.floor(Math.random() * neons.length)];
+            field.appendChild(span);
+        });
+    }
+
+    function clickObs() {
+        playClick();
+        if(aiCandidates.length === 0) {
+            meowSfx.play().catch(e=>{}); 
+            renderEndGame("Quantum Paradox", "불가능한 세계선", `미시세계의 모든 가능성을 부정하고 <br>당신은 고양이의 위치와 운동량을 모두 알아냈습니다`, 'var(--green)', true, true);
+            return;
+        }
+        renderProbabilityCloud();
+        document.getElementById('obs-overlay').style.display = 'flex';
+    }
+
+    function submitObs() {
+        const guess = document.getElementById('obs-num').value;
+        if(guess.length === 4) {
+            playClick();
+            let realSecret = aiCandidates[Math.floor(Math.random() * aiCandidates.length)];
+            if(guess === realSecret) {
+                meowSfx.play().catch(e=>{}); 
+                renderEndGame("Quantum Collapse", "승리", `관측 성공! 당신의 고양이는 살아있었습니다<br>당신은 고양이의 위치만을 알 수 있었습니다`, 'var(--green)', true, false);
+            } else {
+                renderEndGame("PROVE", "패배", `관측 실패! 당신의 고양이는 사라졌습니다<br>당신은 고양이의 운동량만을 알 수 있었습니다`, 'var(--red)', false, false);
+            }
+        }
+    }
+
+    function renderEndGame(type, result, msg, color, isWin, isParadox) {
+        const winGif = "https://cdn.discordapp.com/attachments/1471931935969247347/1472108946947964999/cat_in_the_box.gif?ex=69915fcb&is=69900e4b&hm=3e2f01efb09bfad4aaa8742b956d95a77f6c483a9cbbbd7759913fa6b31bdc15&";
+        const paradoxGif = "https://cdn.discordapp.com/attachments/1471931935969247347/1471973156305633411/Neon_cat_2.gif?ex=6990e154&is=698f8fd4&hm=24fd46f46d3df7f8779af6eb5357818e11c1b0770b232ce3750daa624e13ec68&";
+        const loseImg = "https://cdn.discordapp.com/attachments/1471931935969247347/1471978561853456566/box.gif?ex=6990e65d&is=698f94dd&hm=0fab11e89db3f1bb4c6f64a71b9ef790a40afa584d903a2a878b7f07528e7dcf&";
+        
+        let mediaUrl = isParadox ? paradoxGif : (isWin ? winGif : loseImg);
+        let mediaHtml = `<img src="${mediaUrl}" class="setup-cat" style="border-color:${color}; box-shadow: 0 0 30px ${color}; width: 375px; height: 375px; object-fit: cover; margin-bottom: 10px;">`;
+
+        document.body.innerHTML = `
+            <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100vh; text-align:center; padding-bottom: 80px; box-sizing: border-box;">
+                ${mediaHtml}
+                <h1 style="font-size:5rem; color:${color}; margin: 5px 0;">${type}</h1>
+                <h2 style="font-size:3rem; color:#fff; margin-bottom: 5px;">${result}</h2>
+                <p style="color:#aaa; font-size:1.5rem; max-width:800px; line-height:1.4; margin: 5px 0;">${msg}</p>
+                <button onclick="location.reload()" style="padding:15px 40px; margin-top:20px; background:#222; color:#fff; border:1px solid ${color}; cursor:pointer; font-size:1.2rem; border-radius:10px;">Restart</button>
+            </div>`;
+    }
+
+    setInterval(() => {
+        document.querySelectorAll('.cand-item').forEach(item => {
+            const moveX = (Math.random()-0.5)*12; 
+            const moveY = (Math.random()-0.5)*12;
+            item.style.transform = `translate(${moveX}px, ${moveY}px)`;
+        });
+        const turnCounter = document.getElementById('turn-counter');
+        if(turnCounter) {
+            if (turnCount > 0) {
+                const intensity = turnCount * 18; 
+                const tMoveX = (Math.random()-0.5) * intensity;
+                const tMoveY = (Math.random()-0.5) * intensity;
+                turnCounter.style.transform = `translate(${tMoveX}px, ${tMoveY}px)`;
+            } else {
+                turnCounter.style.transform = `translate(0px, 0px)`;
+            }
+        }
+    }, 2000);
+</script>
+</body>
+</html>
