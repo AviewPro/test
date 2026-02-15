@@ -12,7 +12,8 @@
         
         html {
             height: 100%;
-            overflow: hidden;
+            overflow-x: hidden;
+            overflow-y: auto; /* 세로 스크롤 허용 */
         }
 
         body { 
@@ -27,10 +28,9 @@
             flex-direction: column; 
             align-items: center; 
             justify-content: flex-start;
-            height: 100vh;
+            min-height: 100vh; /* height 대신 min-height 사용 */
             margin: 0; 
             padding: 0;
-            overflow: hidden;
             user-select: none;
             -webkit-user-select: none;
         }
@@ -69,7 +69,7 @@
             justify-content: center; 
             width: 95%; 
             height: auto; 
-            padding-bottom: 2vh; 
+            padding-bottom: 5vh; /* 하단 여백 추가 */
         }
         
         #setup { width: 50vh; height: auto; padding: 4vh; border-radius: 2.5vh; background: rgba(10, 10, 15, 0.95); border: 0.4vh solid var(--cyan); z-index: 200; text-align: center; box-sizing: border-box; box-shadow: 0 0 3vh rgba(0, 242, 255, 0.3); display: flex; flex-direction: column; align-items: center; justify-content: center; margin-bottom: 1vh; }
@@ -252,17 +252,19 @@
         @keyframes slide-v { from { transform: translateY(150vh); } to { transform: translateY(-150%); } }
 
         @media screen and (max-width: 768px) {
+            html, body { overflow-y: auto !important; height: auto !important; } /* 모바일 세로 모드 스크롤 강제 허용 */
             #setup { width: 90vw; }
-            #game-box, #info-panel { width: 90vw; height: auto; min-height: 80vh; }
+            #game-box, #info-panel { width: 90vw; height: auto; min-height: 80vh; margin-bottom: 5vh; }
             .setup-cat, .setup-btn, .tutorial-btn, .setup-box-container { width: 80vw; }
             .header-title { font-size: 4vh; letter-spacing: 0.5vh; }
             .panel-center { width: 90vw; padding: 3vh; }
+            .game-container { padding-bottom: 10vh; }
         }
     </style>
 </head>
 <body oncontextmenu="return false" oncopy="return false" oncut="return false">
 
-<div id="version-tag">1.1 version</div>
+<div id="version-tag">1.2 version</div>
 <div id="flash-overlay"></div>
 
 <div id="sound-control">
@@ -900,7 +902,7 @@
         }
 
         document.body.innerHTML = `
-            <div id="version-tag">1.1 version</div>
+            <div id="version-tag">1.2 version</div>
             ${emojiLanes}
             <div id="sound-control" style="z-index:20000;">
                 <span class="sound-icon">♪</span>
@@ -923,7 +925,7 @@
                     <div id="tut-esc-guide" class="esc-guide" style="display:none;"></div>
                 </div>
             </div>
-            <div style="display:flex; flex-direction:column; align-items:center; justify-content:flex-start; height:100vh; text-align:center; box-sizing: border-box; position:relative; z-index:50; padding: 3vh 0; overflow: hidden;">
+            <div style="display:flex; flex-direction:column; align-items:center; justify-content:flex-start; min-height:100vh; text-align:center; box-sizing: border-box; position:relative; z-index:50; padding: 3vh 0;">
                 <img src="${mediaUrl}" style="border:0.4vh solid ${color}; border-radius:4vh; box-shadow: 0 0 3vh ${color}; width: 40vh; height: 40vh; object-fit: cover; margin-bottom: 2vh;">
                 <h1 style="font-size:6vh; color:${color}; margin: 1vh 0; text-shadow:0 0 2vh ${color};">${type}</h1>
                 <h2 style="font-size:3.5vh; color:#fff; margin-bottom: 1vh;">${result}</h2>
