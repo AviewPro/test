@@ -48,7 +48,7 @@
 
         .title-wrapper { position: relative; margin-bottom: 3vh; z-index: 300; display: flex; justify-content: center; align-items: center; }
         .title-bg { position: absolute; background: rgba(0, 0, 0, 0.7); width: 120%; height: 120%; border-radius: 1.5vh; filter: blur(0.5vh); z-index: -1; }
-        .header-title { font-size: 5vh; font-weight: bold; letter-spacing: 1.2vh; text-shadow: 0 0 2vh currentColor; animation: neonShift 10s infinite alternate linear; text-align: center; margin: 0; padding: 1vh 4vh; }
+        .header-title { font-size: 5vh; font-weight: bold; letter-spacing: 1.2vh; text-shadow: 0 0 2 vh currentColor; animation: neonShift 10s infinite alternate linear; text-align: center; margin: 0; padding: 1vh 4vh; }
         
         @keyframes neonShift { 0% { color: var(--cyan); border-color: var(--cyan); box-shadow: 0 0 2vh var(--cyan); } 100% { color: var(--purple); border-color: var(--purple); box-shadow: 0 0 2vh var(--purple); } }
         @keyframes neonShiftBg { 0% { background-color: var(--cyan); box-shadow: 0 0 1.5vh var(--cyan); } 100% { background-color: var(--purple); box-shadow: 0 0 1.5vh var(--purple); } }
@@ -197,6 +197,7 @@
             animation: floatingCat 4s infinite ease-in-out;
         }
         
+        /* 고양이 둥실둥실 애니메이션 */
         @keyframes floatingCat {
             0%, 100% { transform: translateY(0) rotate(0deg); }
             50% { transform: translateY(-3vh) rotate(2deg); }
@@ -238,64 +239,83 @@
         @keyframes slide-h { from { transform: translateX(-150%); } to { transform: translateX(150vw); } }
         @keyframes slide-v { from { transform: translateY(150vh); } to { transform: translateY(-150%); } }
 
-        /* --- 모바일 환경 최적화 코드 --- */
+/* --- 모바일 환경 최적화 코드 (수정됨) --- */
         @media screen and (max-width: 768px) {
             body {
-                overflow: auto; 
+                overflow-y: auto; /* 세로 스크롤 허용 */
                 justify-content: flex-start;
-                padding-top: 2vh;
+                padding-top: 5vh;
+                min-height: 100vh;
             }
 
             .game-container {
-                flex-direction: column !important; 
+                flex-direction: column; /* 세로 배치 */
                 height: auto;
-                gap: 2vh;
-                padding-bottom: 5vh;
-                flex-wrap: wrap;
+                width: 95%;
+                gap: 4vh;
+                padding-bottom: 10vh; /* 하단 여유 공간 */
+                align-items: center;
+                display: flex; /* 명시적으로 flex 유지 */
             }
 
             #game-box, #info-panel {
-                width: 90vw !important;
-                height: 70vh; 
+                width: 100%; /* 너비 꽉 채움 */
+                height: auto; /* 높이 자동 조절 */
+                min-height: 70vh; /* 최소 높이 확보 */
                 flex-shrink: 0;
+                display: none; /* 기본 상태 숨김 (JS에서 제어) */
             }
 
-            .chance-area {
-                height: 14vh;
-                margin-bottom: 1vh;
-            }
-
-            #candidates-box {
-                flex-grow: 1;
-                overflow: hidden;
-            }
-
-            #cand-list {
-                display: grid;
-                grid-template-columns: repeat(4, 1fr);
-                gap: 0.8vh;
-                overflow-y: auto; 
-                max-height: 45vh; 
-                -webkit-overflow-scrolling: touch; 
-            }
-
-            .keypad button {
-                padding: 2.2vh 0;
-            }
-
-            .header-title {
-                font-size: 3.5vh; 
-                letter-spacing: 0.5vh;
+            /* 게임 박스가 나타날 때의 스타일 */
+            #game-box[style*="display: flex"], 
+            #info-panel[style*="display: flex"] {
+                display: flex !important;
             }
 
             #setup {
                 width: 90vw;
                 height: auto;
+                min-height: 60vh;
+                padding: 4vh 2vh;
+            }
+
+            .setup-cat, .setup-btn, .tutorial-btn, .new-keyhole {
+                width: 80vw;
+            }
+
+            .header-title {
+                font-size: 3.5vh;
+                letter-spacing: 0.5vh;
+                padding: 1vh 2vh;
+            }
+
+            .chance-area {
+                height: auto;
+                flex-direction: row;
+                gap: 1vh;
+            }
+
+            #chance-box {
+                height: 14vh;
+            }
+
+            .prob-cat-container {
+                width: 14vh;
+                height: 14vh;
+            }
+
+            #cand-list {
+                max-height: 40vh; /* 양자구름 영역 제한 */
+                overflow-y: auto;
+            }
+
+            .panel-center {
+                width: 90vw;
                 padding: 3vh;
             }
-            
-            .setup-cat, .setup-btn, .tutorial-btn {
-                width: 70vw;
+
+            #obs-input-container input {
+                width: 80%;
             }
         }
     </style>
@@ -820,7 +840,7 @@
             statusEl.style.color = "var(--red)";
         } else {
             entBtn.disabled = false;
-            statusEl.innerText = "양자고양이 위치 관측 중...";
+            statusEl.innerText = "양자고양이 좌표 측정 중...";
             statusEl.style.color = "var(--cyan)";
         }
     }
