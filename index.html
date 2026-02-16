@@ -243,16 +243,17 @@
         }
         #dead-x { display: none; position: absolute; top: 62%; left: 50%; transform: translate(-50%, -50%); font-size: 30vh; color: var(--green); text-shadow: 0 0 4vh var(--green), 0 0 8vh var(--green); font-weight: 900; opacity: 0.8; z-index: 100; pointer-events: none; }
 
+        /* 확률 0% 연출용 블랙아웃 오버레이 */
+        #paradox-blackout {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: #000; z-index: 25000; display: none; pointer-events: none;
+        }
+
         .emoji-lane {
             position: fixed; white-space: nowrap; font-size: 5vh; pointer-events: none; z-index: 5; opacity: 0.6;
         }
         @keyframes slide-h { from { transform: translateX(-150%); } to { transform: translateX(150vw); } }
         @keyframes slide-v { from { transform: translateY(150vh); } to { transform: translateY(-150%); } }
-
-        @keyframes footageFadeOut {
-            from { opacity: 1; }
-            to { opacity: 0; }
-        }
 
         @media screen and (max-width: 768px) {
             #setup { width: 90vw; }
@@ -277,6 +278,7 @@
 
 <div id="version-tag">1.2 version</div>
 <div id="flash-overlay"></div>
+<div id="paradox-blackout"></div>
 
 <div id="sound-control">
     <span class="sound-icon">♪</span>
@@ -397,7 +399,6 @@
     const _0xfailSfx = new Audio("띠용.mp3");
     const _0xsuccessSfx = new Audio("고양이 코골이_[cut_5sec].mp3");
     const _0xnyaBgmSfx = new Audio("냥이 브금.mp3");
-    const _0xlightsOutSfx = new Audio("소등.mp3");
 
     const _0xoriginalBodyContent = document.body.innerHTML;
 
@@ -416,7 +417,6 @@
         _0xsuccessSfx.volume = _0xcurrentVolume;
         _0xspecialClickSfx.volume = Math.min(1.0, _0xcurrentVolume * 3.0);
         _0xnyaBgmSfx.volume = _0xcurrentVolume;
-        _0xlightsOutSfx.volume = Math.min(1.0, _0xcurrentVolume * 1.5); 
     }
     
     _0x3f2a(0.15);
@@ -613,6 +613,10 @@
         
         if (e.key === 'Enter') {
             e.preventDefault();
+            // 메인 메뉴(setup 화면)가 표시 중일 때는 엔터키 비활성화
+            if (document.getElementById('setup').style.display !== 'none') {
+                return;
+            }
             _0x7c3d('ENT');
             return;
         }
@@ -709,45 +713,32 @@
         const catImg = document.getElementById('prob-cat-img');
         const deadX = document.getElementById('dead-x');
         const flashOverlay = document.getElementById('flash-overlay');
+        const blackout = document.getElementById('paradox-blackout');
         
         if(_0xaiCandidates.length === 0) {
             if(!_0xparadoxMusicTriggered) {
                 _0xbgm.pause();
-                _0xlightsOutSfx.play().catch(e=>{});
-                
-                setTimeout(() => {
-                    _0xbgm = new Audio("https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3");
-                    _0xbgm.loop = true;
-                    _0xbgm.volume = Math.min(1.0, _0xcurrentVolume * 0.5616);
-                    _0xbgm.play().catch(e => {});
-                }, 4000);
-                
+                _0xbgm = new Audio("https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3");
+                _0xbgm.loop = true;
+                _0xbgm.volume = Math.min(1.0, _0xcurrentVolume * 0.5616);
+                _0xbgm.play().catch(e => {});
                 _0xparadoxMusicTriggered = true;
             }
             if(!_0xzeroOverlayTriggered) {
+                // 확률 0% 연출: 칠흑 같은 어둠 후 서서히 밝아짐
+                blackout.style.display = 'block';
+                blackout.style.opacity = '1';
+                setTimeout(() => {
+                    blackout.style.transition = 'opacity 3s ease';
+                    blackout.style.opacity = '0';
+                    setTimeout(() => { blackout.style.display = 'none'; }, 3000);
+                }, 3000);
+
                 flashOverlay.style.background = 'radial-gradient(circle, rgba(0, 255, 65, 0) 70%, rgba(0, 255, 65, 0.4) 100%)';
                 flashOverlay.style.opacity = '1';
                 setTimeout(() => { flashOverlay.style.opacity = '0'; }, 1500);
                 _0xzeroOverlayTriggered = true;
                 _0xstPsL();
-
-                const candBox = document.getElementById('candidates-box');
-                const footageImg = document.createElement('img');
-                footageImg.src = 'cat footage3.jpg';
-                footageImg.style.position = 'absolute';
-                footageImg.style.top = '0';
-                footageImg.style.left = '0';
-                footageImg.style.width = '100%';
-                footageImg.style.height = '100%';
-                footageImg.style.objectFit = 'cover';
-                footageImg.style.zIndex = '10';
-                candBox.appendChild(footageImg);
-                
-                setTimeout(() => {
-                    footageImg.style.transition = 'opacity 8s linear';
-                    footageImg.style.opacity = '0';
-                    setTimeout(() => footageImg.remove(), 8000);
-                }, 8000);
             }
             chanceTitleEl.style.display = 'none';
             chanceBoxEl.style.borderColor = 'var(--green)';
