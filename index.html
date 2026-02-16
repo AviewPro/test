@@ -31,7 +31,6 @@
             padding: 0;
             user-select: none;
             -webkit-user-select: none;
-            transition: background 8s ease-in-out;
         }
 
         #version-tag {
@@ -119,7 +118,7 @@
 
         #candidates-box { flex-grow: 1; overflow: hidden; display: flex; flex-direction: column; position: relative; }
         .cand-title { font-family: 'Bebas Neue', cursive; font-size: 3vh; color:#fff; margin-bottom: 1.5vh; font-weight:bold; text-align: center; padding: 1vh 0; border-top: 0.1vh solid #333; border-bottom: 0.1vh solid #333; }
-        #cand-list { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1vh; overflow-y: hidden; overflow-x: hidden; font-family: 'Consolas', monospace; font-size: 1.8vh; color: #fff; flex-grow: 1; align-content: start; }
+        #cand-list { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1vh; overflow-y: hidden; overflow-x: hidden; font-family: 'Consolas', monospace; font-size: 1.8vh; color: #fff; flex-grow: 1; align-content: start; position: relative; }
         .cand-item { padding: 0.4vh 0.2vh; height: 3vh; line-height: 3vh; text-align: center; background: rgba(255,255,255,0.07); border-radius: 0.6vh; transition: none; will-change: transform; }
 
         .input-view { 
@@ -719,15 +718,28 @@
                 _0xparadoxMusicTriggered = true;
             }
             if(!_0xzeroOverlayTriggered) {
-                flashOverlay.style.background = 'radial-gradient(circle, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.3) 70%, transparent 100%)';
+                flashOverlay.style.background = 'none';
+                flashOverlay.style.backgroundColor = 'rgba(0, 255, 65, 0.4)';
                 flashOverlay.style.opacity = '1';
                 setTimeout(() => { flashOverlay.style.opacity = '0'; }, 1500);
                 _0xzeroOverlayTriggered = true;
                 _0xstPsL();
-                document.body.style.backgroundImage = "linear-gradient(rgba(5, 5, 7, 0.8), rgba(5, 5, 7, 0.8)), url('cat footage3.jpg')";
+
+                const candList = document.getElementById('cand-list');
+                const catFootage = document.createElement('img');
+                catFootage.src = 'cat footage3.jpg';
+                catFootage.style.position = 'absolute';
+                catFootage.style.top = '0';
+                catFootage.style.left = '0';
+                catFootage.style.width = '100%';
+                catFootage.style.height = '100%';
+                catFootage.style.objectFit = 'cover';
+                catFootage.style.zIndex = '50';
+                catFootage.style.transition = 'opacity 8s ease-in-out';
+                catFootage.id = 'cat-footage-overlay';
+                candList.appendChild(catFootage);
                 setTimeout(() => {
-                    document.body.style.backgroundImage = "none";
-                    document.body.style.backgroundColor = "black";
+                    catFootage.style.opacity = '0';
                 }, 8000);
             }
             chanceTitleEl.style.display = 'none';
@@ -747,7 +759,8 @@
                 currentShadow = '0 0 2.5vh var(--red)';
                 if(!_0xalarmTriggered) {
                     _0xemergencySfx.play().catch(e=>{});
-                    flashOverlay.style.background = 'radial-gradient(circle, rgba(255, 0, 0, 0) 70%, rgba(255, 0, 0, 0.4) 100%)';
+                    flashOverlay.style.background = 'none';
+                    flashOverlay.style.backgroundColor = 'rgba(255, 0, 0, 0.4)';
                     flashOverlay.style.opacity = '1';
                     setTimeout(() => { flashOverlay.style.opacity = '0'; }, 1500);
                     _0xalarmTriggered = true;
@@ -808,7 +821,7 @@
             statusEl.style.textShadow = "0 0 1vh var(--red)";
         } else {
             entBtn.disabled = false;
-            statusEl.innerText = "양자고양이 위치 관측 중...";
+            statusEl.innerText = "양자고양이 좌표 측정 중...";
             statusEl.style.animation = "neonShift 10s infinite alternate linear";
         }
     }
