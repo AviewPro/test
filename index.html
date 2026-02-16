@@ -371,8 +371,6 @@
         .then(data => { _0xtextData = data; })
         .catch(error => console.error('Error loading textdata:', error));
 
-    const firebaseConfig = { apiKey: "AIzaSyCvxUeqc28cRZ8RL4jpAwtakMxRo5d6zbU", authDomain: "aviewpro.firebaseapp.com", databaseURL: "https://aviewpro-default-rtdb.asia-southeast1.firebasedatabase.app", projectId: "aviewpro", storageBucket: "aviewpro.firebasestorage.app", messagingSenderId: "592622610945", appId: "1:592622610945:web:7d56b09e966a4faac62e00", measurementId: "G-NZQ5ZFXG2F" };
-
     let _0xaiCandidates = [], _0xhistory = [], _0xinputStr = "", _0xturnCount = 7;
     let _0xisTutorial = false, _0xtutorialStep = 0, _0xcurrentTipType = "";
     let _0xparadoxMusicTriggered = false, _0xalarmTriggered = false, _0xzeroOverlayTriggered = false;
@@ -970,7 +968,7 @@
         _0xcrdScrInt = setInterval(() => {
             _0xcrdY -= _0xcrdSpd;
             content.style.transform = `translateY(${_0xcrdY}px)`;
-            if (_0xcrdY < -(content.scrollHeight + 100)) {
+            if (_0xcrdY < -(content.scrollHeight + 25)) {
                 clearInterval(_0xcrdScrInt);
             }
         }, 16);
