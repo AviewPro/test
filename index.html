@@ -258,7 +258,7 @@
         .credit-esc { position: fixed; bottom: 3vh; right: 3vh; color: #666; font-size: 1.5vh; z-index: 15003; }
 
         #flash-overlay { 
-            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 20000; opacity: 0; transition: opacity 1.5s ease;
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 20000; opacity: 0; background: #000;
         }
         #dead-x { 
             display: none; position: absolute; top: 62%; left: 50%; transform: translate(-50%, -50%); 
@@ -416,6 +416,7 @@
     const _0xfailSfx = new Audio("띠용.mp3");
     const _0xsuccessSfx = new Audio("고양이 코골이_[cut_5sec].mp3");
     const _0xnyaBgmSfx = new Audio("냥이 브금.mp3");
+    const _0xlightsOffSfx = new Audio("소등.mp3");
 
     const _0xoriginalBodyContent = document.body.innerHTML;
 
@@ -434,6 +435,7 @@
         _0xsuccessSfx.volume = _0xcurrentVolume;
         _0xspecialClickSfx.volume = Math.min(1.0, _0xcurrentVolume * 3.0);
         _0xnyaBgmSfx.volume = _0xcurrentVolume;
+        _0xlightsOffSfx.volume = Math.min(1.0, _0xcurrentVolume * 2.0);
     }
     
     _0x3f2a(0.15);
@@ -738,9 +740,18 @@
                 _0xparadoxMusicTriggered = true;
             }
             if(!_0xzeroOverlayTriggered) {
-                flashOverlay.style.background = '#000';
+                // 소등 사운드 재생
+                _0xlightsOffSfx.currentTime = 0;
+                _0xlightsOffSfx.play().catch(e=>{});
+
+                // 즉각 암전 후 3초 뒤 페이드아웃
+                flashOverlay.style.transition = 'none';
                 flashOverlay.style.opacity = '1';
-                setTimeout(() => { flashOverlay.style.opacity = '0'; }, 3000);
+                
+                setTimeout(() => { 
+                    flashOverlay.style.transition = 'opacity 1.5s ease';
+                    flashOverlay.style.opacity = '0'; 
+                }, 3000);
                 
                 if(paradoxOverlay) {
                     paradoxOverlay.style.display = 'block';
@@ -769,6 +780,7 @@
                 currentShadow = '0 0 2.5vh var(--red)';
                 if(!_0xalarmTriggered) {
                     _0xemergencySfx.play().catch(e=>{});
+                    flashOverlay.style.transition = 'opacity 1.5s ease';
                     flashOverlay.style.background = 'radial-gradient(circle, rgba(255, 0, 0, 0) 70%, rgba(255, 0, 0, 0.4) 100%)';
                     flashOverlay.style.opacity = '1';
                     setTimeout(() => { flashOverlay.style.opacity = '0'; }, 1500);
