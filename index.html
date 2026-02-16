@@ -733,10 +733,13 @@
         if(_0xaiCandidates.length === 0) {
             if(!_0xparadoxMusicTriggered) {
                 _0xbgm.pause();
-                _0xbgm = new Audio("https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3");
-                _0xbgm.loop = true;
-                _0xbgm.volume = Math.min(1.0, _0xcurrentVolume * 0.5616);
-                _0xbgm.play().catch(e => {});
+                // 4초 뒤에 BGM 시작
+                setTimeout(() => {
+                    _0xbgm = new Audio("https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3");
+                    _0xbgm.loop = true;
+                    _0xbgm.volume = Math.min(1.0, _0xcurrentVolume * 0.5616);
+                    _0xbgm.play().catch(e => {});
+                }, 4000);
                 _0xparadoxMusicTriggered = true;
             }
             if(!_0xzeroOverlayTriggered) {
@@ -744,8 +747,9 @@
                 _0xlightsOffSfx.currentTime = 0;
                 _0xlightsOffSfx.play().catch(e=>{});
 
-                // 레이어 즉시 암전 (transition 제거 후 opacity 1)
+                // 암전 효과: 비네트(빨간색 효과) 제거를 위해 배경을 순수 검정으로 설정
                 flashOverlay.style.transition = 'none';
+                flashOverlay.style.background = '#000';
                 flashOverlay.style.opacity = '1';
                 
                 // 3초 대기 후 서서히 밝아짐
