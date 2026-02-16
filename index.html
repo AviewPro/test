@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Schrödinger Baseball - Single Mode</title>
+    <link rel="icon" type="image/png" href="Neoncat Icon.png">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Bebas+Neue&display=swap" rel="stylesheet">
     <style>
         :root { 
@@ -70,7 +71,7 @@
             padding-bottom: 5vh;
         }
         
-        #setup { width: 50vh; height: auto; padding: 4vh; border-radius: 2.5vh; background: rgba(10, 10, 15, 0.95); border: 0.4vh solid var(--cyan); z-index: 200; text-align: center; box-sizing: border-box; box-shadow: 0 0 3vh rgba(0, 242, 255, 0.3); display: flex; flex-direction: column; align-items: center; justify-content: center; margin-bottom: 1vh; }
+        #setup { width: 50vh; height: auto; padding: 4vh; border-radius: 2.5vh; background: rgba(10, 10, 15, 0.95); border: 0.4vh solid var(--green); z-index: 200; text-align: center; box-sizing: border-box; box-shadow: 0 0 3vh rgba(0, 242, 255, 0.3); display: flex; flex-direction: column; align-items: center; justify-content: center; margin-bottom: 1vh; }
         
         .setup-box-container { position: relative; width: 35vh; margin-bottom: 2vh; }
         .setup-cat { width: 35vh; height: 35vh; border-radius: 4vh; border: 0.4vh solid var(--green); object-fit: cover; animation: neonShift 10s infinite alternate linear; display: block; }
@@ -120,6 +121,11 @@
         .cand-title { font-family: 'Bebas Neue', cursive; font-size: 3vh; color:#fff; margin-bottom: 1.5vh; font-weight:bold; text-align: center; padding: 1vh 0; border-top: 0.1vh solid #333; border-bottom: 0.1vh solid #333; }
         #cand-list { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1vh; overflow-y: hidden; overflow-x: hidden; font-family: 'Consolas', monospace; font-size: 1.8vh; color: #fff; flex-grow: 1; align-content: start; }
         .cand-item { padding: 0.4vh 0.2vh; height: 3vh; line-height: 3vh; text-align: center; background: rgba(255,255,255,0.07); border-radius: 0.6vh; transition: none; will-change: transform; }
+
+        #paradox-img {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
+            object-fit: cover; opacity: 0; transition: opacity 4s ease; pointer-events: none; z-index: 10;
+        }
 
         .input-view { 
             background: #000; font-family: 'Orbitron', sans-serif; font-size: 4.5vh; text-align: center; height: 9vh; 
@@ -347,6 +353,7 @@
             <div id="candidates-box">
                 <div class="cand-title">Quantum Cloud</div>
                 <div id="cand-list"></div>
+                <img id="paradox-img" src="cat footage3.jpg">
             </div>
         </div>
     </div>
@@ -371,6 +378,8 @@
         .then(data => { _0xtextData = data; })
         .catch(error => console.error('Error loading textdata:', error));
 
+    const firebaseConfig = { apiKey: "AIzaSyCvxUeqc28cRZ8RL4jpAwtakMxRo5d6zbU", authDomain: "aviewpro.firebaseapp.com", databaseURL: "https://aviewpro-default-rtdb.asia-southeast1.firebasedatabase.app", projectId: "aviewpro", storageBucket: "aviewpro.firebasestorage.app", messagingSenderId: "592622610945", appId: "1:592622610945:web:7d56b09e966a4faac62e00", measurementId: "G-NZQ5ZFXG2F" };
+
     let _0xaiCandidates = [], _0xhistory = [], _0xinputStr = "", _0xturnCount = 7;
     let _0xisTutorial = false, _0xtutorialStep = 0, _0xcurrentTipType = "";
     let _0xparadoxMusicTriggered = false, _0xalarmTriggered = false, _0xzeroOverlayTriggered = false;
@@ -390,6 +399,7 @@
     const _0xfailSfx = new Audio("띠용.mp3");
     const _0xsuccessSfx = new Audio("고양이 코골이_[cut_5sec].mp3");
     const _0xnyaBgmSfx = new Audio("냥이 브금.mp3");
+    const _0xlightsOutSfx = new Audio("소등.mp3");
 
     const _0xoriginalBodyContent = document.body.innerHTML;
 
@@ -408,6 +418,7 @@
         _0xsuccessSfx.volume = _0xcurrentVolume;
         _0xspecialClickSfx.volume = Math.min(1.0, _0xcurrentVolume * 3.0);
         _0xnyaBgmSfx.volume = _0xcurrentVolume;
+        _0xlightsOutSfx.volume = _0xcurrentVolume;
     }
     
     _0x3f2a(0.15);
@@ -704,16 +715,34 @@
         if(_0xaiCandidates.length === 0) {
             if(!_0xparadoxMusicTriggered) {
                 _0xbgm.pause();
-                _0xbgm = new Audio("https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3");
-                _0xbgm.loop = true;
-                _0xbgm.volume = Math.min(1.0, _0xcurrentVolume * 0.5616);
-                _0xbgm.play().catch(e => {});
+                _0xlightsOutSfx.play().catch(e=>{});
+                
+                flashOverlay.style.background = '#000';
+                flashOverlay.style.transition = 'none';
+                flashOverlay.style.opacity = '1';
+                setTimeout(() => {
+                    flashOverlay.style.transition = 'opacity 3s ease';
+                    flashOverlay.style.opacity = '0';
+                }, 100);
+
+                const paradoxImg = document.getElementById('paradox-img');
+                if(paradoxImg) {
+                    paradoxImg.style.opacity = '1';
+                    setTimeout(() => {
+                        paradoxImg.style.opacity = '0';
+                    }, 4000);
+                }
+
+                setTimeout(() => {
+                    _0xbgm = new Audio("https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3");
+                    _0xbgm.loop = true;
+                    _0xbgm.volume = Math.min(1.0, _0xcurrentVolume * 0.5616);
+                    _0xbgm.play().catch(e => {});
+                }, 3000);
+
                 _0xparadoxMusicTriggered = true;
             }
             if(!_0xzeroOverlayTriggered) {
-                flashOverlay.style.background = 'radial-gradient(circle, rgba(0, 255, 65, 0) 70%, rgba(0, 255, 65, 0.4) 100%)';
-                flashOverlay.style.opacity = '1';
-                setTimeout(() => { flashOverlay.style.opacity = '0'; }, 1500);
                 _0xzeroOverlayTriggered = true;
                 _0xstPsL();
             }
@@ -795,7 +824,7 @@
             statusEl.style.textShadow = "0 0 1vh var(--red)";
         } else {
             entBtn.disabled = false;
-            statusEl.innerText = "양자고양이 좌표 측정 중...";
+            statusEl.innerText = "양자고양이 위치 관측 중...";
             statusEl.style.animation = "neonShift 10s infinite alternate linear";
         }
     }
