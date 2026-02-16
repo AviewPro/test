@@ -3,9 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <title>Schrödinger Baseball - Single Mode</title>
-    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
-    
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Bebas+Neue&display=swap" rel="stylesheet">
     <style>
         :root { 
@@ -59,7 +56,6 @@
         
         @keyframes neonShift { 0% { color: var(--cyan); border-color: var(--cyan); box-shadow: 0 0 2vh var(--cyan); } 100% { color: var(--purple); border-color: var(--purple); box-shadow: 0 0 2vh var(--purple); } }
         @keyframes neonShiftBg { 0% { background-color: var(--cyan); box-shadow: 0 0 1.5vh var(--cyan); } 100% { background-color: var(--purple); box-shadow: 0 0 1.5vh var(--purple); } }
-        @keyframes neonShiftGreen { 0% { background-color: var(--green); box-shadow: 0 0 1.5vh var(--green); } 100% { background-color: var(--green); box-shadow: 0 0 3vh var(--green); } }
 
         @keyframes keyholeNeonShift { 
             0% { filter: drop-shadow(0 0 1.5vh var(--cyan)) drop-shadow(0 0 3vh var(--cyan)); } 
@@ -76,13 +72,12 @@
             padding-bottom: 2vh; 
         }
         
-        #setup { width: 50vh; height: auto; padding: 4vh; border-radius: 2.5vh; background: rgba(10, 10, 15, 0.95); border: 0.4vh solid var(--cyan); z-index: 200; text-align: center; box-sizing: border-box; box-shadow: 0 0 3vh rgba(0, 242, 255, 0.3); display: flex; flex-direction: column; align-items: center; justify-content: center; margin-bottom: 1vh; }
+        #setup { width: 50vh; height: auto; padding: 4vh; border-radius: 2.5vh; background: rgba(10, 10, 15, 0.95); border: 0.4vh solid var(--green); z-index: 200; text-align: center; box-sizing: border-box; box-shadow: 0 0 3vh rgba(0, 242, 255, 0.3); display: flex; flex-direction: column; align-items: center; justify-content: center; margin-bottom: 1vh; }
         
         .setup-box-container { position: relative; width: 35vh; margin-bottom: 2vh; }
         .setup-cat { width: 35vh; height: 35vh; border-radius: 4vh; border: 0.4vh solid var(--green); object-fit: cover; animation: neonShift 10s infinite alternate linear; display: block; }
         
-        /* 시작 버튼 상단 이동 및 네온 그린 적용 */
-        .setup-btn { font-family: 'Bebas Neue', cursive; width: 35vh; color: #000; font-weight: 900; height: 7vh; font-size: 3.2vh; border-radius: 1.5vh; cursor: pointer; border: none; background-color: var(--green); box-shadow: 0 0 1.5vh var(--green); margin-bottom: 1vh; transition: transform 0.1s, filter 0.2s; letter-spacing: 0.1vh; order: -1; }
+        .setup-btn { font-family: 'Bebas Neue', cursive; width: 35vh; color: #000; font-weight: 900; height: 7vh; font-size: 3.2vh; border-radius: 1.5vh; cursor: pointer; border: none; animation: neonShiftBg 10s infinite alternate linear; margin-top: 1vh; transition: transform 0.1s, filter 0.2s; letter-spacing: 0.1vh; }
         .setup-btn:hover { transform: scale(1.02); filter: brightness(1.2); }
         .setup-btn:active { transform: scale(0.98); }
 
@@ -121,7 +116,7 @@
 
         .prob-cat-container { position: relative; width: 16vh; height: 16vh; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
         .prob-cat { width: 100%; height: 100%; border-radius: 2.5vh; border: 0.2vh solid var(--purple); object-fit: cover; box-sizing: border-box; z-index: 1; }
-        #turn-counter { position: absolute; font-weight: 900; font-size: 8vh; z-index: 20; pointer-events: none; transition: transform 2s ease-in-out, color 0.5s; will-change: transform; right: 0; top: 0; }
+        #turn-counter { position: absolute; font-weight: 900; font-size: 8vh; z-index: 20; pointer-events: none; transition: transform 2s ease-in-out, color 0.5s; will-change: transform; }
 
         #candidates-box { flex-grow: 1; overflow: hidden; display: flex; flex-direction: column; position: relative; }
         .cand-title { font-family: 'Bebas Neue', cursive; font-size: 3vh; color:#fff; margin-bottom: 1.5vh; font-weight:bold; text-align: center; padding: 1vh 0; border-top: 0.1vh solid #333; border-bottom: 0.1vh solid #333; }
@@ -169,7 +164,100 @@
 
         #setup-footer { margin-top: 0.5vh; font-size: 1.3vh; color: #888; text-align: center; z-index: 300; line-height: 1.6; flex-shrink: 0; }
 
-        /* ...기존 애니메이션 및 스타일 유지... */
+        #tutorial-overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6); z-index: 5000; flex-direction: column; align-items: center; justify-content: center;
+        }
+        .tutorial-msg-box {
+            background: #1a1a1a; border: 0.3vh solid #666; padding: 2vh 3vh; border-radius: 2vh;
+            width: 60vh; height: auto; min-height: 10vh; text-align: center; box-shadow: 0 0 2vh rgba(0,0,0,0.8); position: relative;
+        }
+        .tutorial-msg-box h3 { color: #ccc; font-size: 2.5vh; margin-top: 0; margin-bottom: 0; }
+        .tutorial-msg-box p { font-size: 1.8vh; color: #ddd; line-height: 1.6; margin: 0.2vh 0 0.75vh 0; }
+        .tutorial-msg-box .esc-guide { font-size: 1.2vh; color: #888; margin-top: 1.5vh; }
+        .tutorial-msg-box button { background: #444; color: #fff; padding: 1vh 3vh; border: 0.1vh solid #666; border-radius: 1vh; font-weight: bold; cursor: pointer; }
+        .tutorial-msg-box button:hover { background: #555; }
+        
+        .tutorial-msg-box button.btn-cyan { background: var(--cyan); color: #000; border: none; box-shadow: 0 0 1.5vh var(--cyan); }
+        .tutorial-msg-box button.btn-cyan:hover { background: #00d8e4; }
+
+        .tutorial-highlight { 
+            outline: 0.5vh solid var(--red) !important; 
+            box-shadow: 0 0 3vh var(--red) !important;
+            opacity: 1 !important;
+            pointer-events: auto !important;
+        }
+        .tutorial-highlight-turn { 
+            outline: 0.5vh solid var(--red) !important; 
+            box-shadow: 0 0 3vh var(--red) !important;
+            opacity: 1 !important;
+            pointer-events: auto !important;
+            transform: scaleY(0.85);
+        }
+        .tutorial-dim { opacity: 0.2 !important; pointer-events: none !important; }
+
+        #credit-overlay { 
+            display: none; position: fixed; top:0; left:0; width:100%; height:100%; 
+            background: rgba(0,0,0,0.95); z-index: 15000; flex-direction: row; align-items: center; justify-content: center; overflow: hidden;
+        }
+        .side-cat-box {
+            flex: 1; display: flex; align-items: center; justify-content: center; padding: 2vh; height: 100%; z-index: 16000; pointer-events: none;
+        }
+        .side-cat-img { 
+            width: 35vh; height: 35vh; border-radius: 4vh; border: 0.6vh solid #fff; object-fit: cover; 
+            opacity: 1; box-shadow: 0 1vh 3vh rgba(0,0,0,0.8), 0 0 2vh rgba(255,255,255,0.3);
+            transform: translateZ(50px);
+            animation: floatingCat 4s infinite ease-in-out;
+        }
+        
+        @keyframes floatingCat {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-3vh) rotate(2deg); }
+        }
+        
+        #credit-container {
+            position: relative;
+            width: 50%; 
+            height: 100%;
+            border-left: 0.2vh solid rgba(255,255,255,0.3);
+            border-right: 0.2vh solid rgba(255,255,255,0.3);
+            background: rgba(0,0,0,0.98);
+            display: flex;
+            justify-content: center;
+            overflow: hidden;
+            pointer-events: auto;
+            z-index: 15002;
+        }
+        #credit-content {
+            position: absolute; top: 100%; width: 90%; text-align: center; color: #ddd;
+            font-size: 2.1vh; line-height: 2.2; white-space: pre-wrap; padding: 10vh 0;
+            transition: none;
+            pointer-events: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .credit-logo { width: 20.25vh; height: auto; margin-top: 3vh; filter: brightness(0) invert(1); opacity: 0.8; }
+        .credit-esc { position: fixed; bottom: 3vh; right: 3vh; color: #666; font-size: 1.5vh; z-index: 15003; }
+
+        #flash-overlay { 
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 20000; opacity: 0; transition: opacity 1.5s ease;
+        }
+        #dead-x { display: none; position: absolute; top: 62%; left: 50%; transform: translate(-50%, -50%); font-size: 30vh; color: var(--green); text-shadow: 0 0 4vh var(--green), 0 0 8vh var(--green); font-weight: 900; opacity: 0.8; z-index: 100; pointer-events: none; }
+
+        .emoji-lane {
+            position: fixed; white-space: nowrap; font-size: 5vh; pointer-events: none; z-index: 5; opacity: 0.6;
+        }
+        @keyframes slide-h { from { transform: translateX(-150%); } to { transform: translateX(150vw); } }
+        @keyframes slide-v { from { transform: translateY(150vh); } to { transform: translateY(-150%); } }
+
+        @media screen and (max-width: 768px) {
+            #setup { width: 90vw; }
+            #game-box, #info-panel { width: 90vw; height: auto; min-height: 80vh; }
+            .setup-cat, .setup-btn, .tutorial-btn, .setup-box-container { width: 80vw; }
+            .header-title { font-size: 4vh; letter-spacing: 0.5vh; }
+            .panel-center { width: 90vw; padding: 3vh; }
+        }
     </style>
 </head>
 <body oncontextmenu="return false" oncopy="return false" oncut="return false">
@@ -208,11 +296,11 @@
 
 <div class="game-container">
     <div id="setup">
-        <button onclick="startGame()" class="setup-btn">Start Single Mode</button>
         <div class="setup-box-container">
             <img src="Neon cat.gif" class="setup-cat">
         </div>
         <button onclick="startTutorial()" class="tutorial-btn">How to Play</button>
+        <button onclick="startGame()" class="setup-btn" style="background-color: var(--green); box-shadow: 0 0 1.5vh var(--green); animation: none; order: -1; margin-bottom: 2vh;">Start Single Mode</button>
         <img src="Aview.png" class="new-keyhole">
     </div>
     <div id="setup-footer">
@@ -270,11 +358,6 @@
 
 <script>
     const firebaseConfig = { apiKey: "AIzaSyCvxUeqc28cRZ8RL4jpAwtakMxRo5d6zbU", authDomain: "aviewpro.firebaseapp.com", databaseURL: "https://aviewpro-default-rtdb.asia-southeast1.firebasedatabase.app", projectId: "aviewpro", storageBucket: "aviewpro.firebasestorage.app", messagingSenderId: "592622610945", appId: "1:592622610945:web:7d56b09e966a4faac62e00", measurementId: "G-NZQ5ZFXG2F" };
-    
-    // Firebase 초기화 (CDN 로드 후 실행)
-    if (typeof firebase !== 'undefined') {
-        firebase.initializeApp(firebaseConfig);
-    }
 
     let aiCandidates = [], history = [], inputStr = "", turnCount = 8;
     let isTutorial = false, tutorialStep = 0, currentTipType = "";
@@ -308,7 +391,7 @@
         ],
         success: [
             { title: "성공 시 참고팁 (1/5)", desc: "눈치를 못채셨을 수도 있지만 이 게임은 관측에 성공을 하든 실패를 하든 \nQuantum Collapse 엔딩이 나오죠.\n그렇게 한 것은 성공도 실패도 이 게임의 목표가 아니기 때문입니다." },
-            { title: "성공 시 참고팁 (2/5)", desc: "단순히 성공을 하는거 자체는 너무 난이도가 낮으니까요. \n<b style='color:var(--red);'>이 게임은 정확히 7회까지 100%로 양자고양이의 좌표를 특정하고 \n8회차 측정까지 진행해서 양자고양이를 잡는 게임입니다.</b>" },
+            { title: "성공 시 참고팁 (2/5)", desc: "단순히 성공을 하는거 자체는 너무 난이도가 낮으니까요. \n<b style='color:var(--red);'>이 게임은 정확히 6회까지 100%로 양자고양이의 좌표를 특정하고 \n7회차 측정까지 진행해서 양자고양이를 잡는 게임입니다.</b>" },
             { title: "성공 시 참고팁 (3/5)", desc: "이 게임에서 일반 숫자야구의 팁은 큰 도움이 안 될수도 있습니다. \n양자고양이는 계속해서 최대한 안전해보이는 좌표로 도망칩니다. \n정확히는 가능한 후보숫자가 가장 많은 볼카운트 대답한다는 의미죠." },
             { title: "성공 시 참고팁 (4/5)", desc: "고정된 알고리즘이기 때문에 똑같은 질문을 100번 하면 100번 똑같이 답합니다. \n일정한 빌드를 만들어서 가장 높은 확률을 따라가면 최적화되는 구조입니다. \n측정용 숫자를 교차로 배치해서 계속해서 숨을곳을 좁히세요." },
             { title: "성공 시 참고팁 (5/5)", desc: "어차피 깨봤자 개발자의 허접한 감상문 말곤 아무것도 없는데 \n진짜 굳이 패러독스 엔딩을 보겠다는 건가요? 그런분은 정말 환영입니다." }
@@ -483,7 +566,7 @@
             document.querySelectorAll('.key-btn, #zero-btn, #display').forEach(el => el.classList.add('tutorial-highlight'));
         } else if (tutorialStep === 2) {
             title.innerText = "2. 양자고양이 좌표 측정";
-            desc.innerHTML = "입력 패널의 엔터키나 키보드 Enter를 통해서 양자 고양이의 좌표를 측정하세요.<br>고양이가 숨어있는 4자리 좌표를 찾으면 됩니다.";
+            desc.innerHTML = "입력 패널의 엔터키나 키보 Enter를 통해서 양자 고양이의 좌표를 측정하세요.<br>고양이가 숨어있는 4자리 좌표를 찾으면 됩니다.";
             document.getElementById('game-box').classList.remove('tutorial-dim');
             document.getElementById('ent-btn').classList.add('tutorial-highlight');
             document.getElementById('clr-btn').classList.add('tutorial-highlight');
@@ -570,28 +653,36 @@
         }
     }
 
-    function aiRespond(guess) {
-        const outcomes = {};
-        aiCandidates.forEach(cand => {
-            let s=0, b=0;
-            for(let i=0; i<4; i++){ if(guess[i] === cand[i]) s++; else if(cand.includes(guess[i])) b++; }
-            const key = `${s}S${b}B`;
-            if(!outcomes[key]) outcomes[key] = [];
-            outcomes[key].push(cand);
+    // AI 로직 난독화
+    function aiRespond(_0x1a2b) {
+        const _0x3c4d = {};
+        aiCandidates.forEach(_0x5e6f => {
+            let _0x7a8b = 0, _0x9c0d = 0;
+            for (let _0x1357 = 0; _0x1357 < 4; _0x1357++) {
+                if (_0x1a2b[_0x1357] === _0x5e6f[_0x1357]) _0x7a8b++;
+                else if (_0x5e6f.includes(_0x1a2b[_0x1357])) _0x9c0d++;
+            }
+            const _0x2468 = `${_0x7a8b}S${_0x9c0d}B`;
+            if (!_0x3c4d[_0x2468]) _0x3c4d[_0x2468] = [];
+            _0x3c4d[_0x2468].push(_0x5e6f);
         });
-        let bestKey = ""; let maxCount = -1;
-        for(let key in outcomes) {
-            if(key === "4S0B") continue; 
-            if(outcomes[key].length > maxCount) { maxCount = outcomes[key].length; bestKey = key; }
+        let _0xdead = "", _0xbeef = -1;
+        for (let _0xkey in _0x3c4d) {
+            if (_0xkey === "4S0B") continue;
+            if (_0x3c4d[_0xkey].length > _0xbeef) {
+                _0xbeef = _0x3c4d[_0xkey].length;
+                _0xdead = _0xkey;
+            }
         }
-        if(!bestKey || aiCandidates.length <= 1) {
-            const fakeS = Math.floor(Math.random() * 3);
-            const fakeB = Math.floor(Math.random() * 3);
-            bestKey = `${fakeS}S${fakeB}B`;
-            aiCandidates = aiCandidates.filter(c => c !== guess); 
-        } else { aiCandidates = outcomes[bestKey]; }
-        const match = bestKey.match(/(\d)S(\d)B/);
-        return { s: parseInt(match[1]), b: parseInt(match[2]) };
+        if (!_0xdead) {
+            const _0xf1 = Math.floor(Math.random() * 3), _0xf2 = Math.floor(Math.random() * 3);
+            _0xdead = `${_0xf1}S${_0xf2}B`;
+            aiCandidates = aiCandidates.filter(_0xc => _0xc !== _0x1a2b);
+        } else {
+            aiCandidates = _0x3c4d[_0xdead];
+        }
+        const _0xres = _0xdead.match(/(\d)S(\d)B/);
+        return { s: parseInt(_0xres[1]), b: parseInt(_0xres[2]) };
     }
 
     function startPoisonLoop() {
@@ -614,19 +705,20 @@
         }, 150);
     }
 
+    // UI 업데이트 난독화
     function updateUI() {
-        const turnCounter = document.getElementById('turn-counter');
-        turnCounter.innerText = turnCount;
-        const prob = aiCandidates.length === 0 ? 0 : (1 / aiCandidates.length * 100);
-        const chanceValEl = document.getElementById('chance-val');
-        const chanceTitleEl = document.getElementById('chance-title');
-        const chanceBoxEl = document.getElementById('chance-box');
-        const catImg = document.getElementById('prob-cat-img');
-        const deadX = document.getElementById('dead-x');
-        const flashOverlay = document.getElementById('flash-overlay');
+        const _0x1 = document.getElementById('turn-counter');
+        _0x1.innerText = turnCount;
+        const _0x2 = aiCandidates.length === 0 ? 0 : (1 / aiCandidates.length * 100);
+        const _0x3 = document.getElementById('chance-val');
+        const _0x4 = document.getElementById('chance-title');
+        const _0x5 = document.getElementById('chance-box');
+        const _0x6 = document.getElementById('prob-cat-img');
+        const _0x7 = document.getElementById('dead-x');
+        const _0x8 = document.getElementById('flash-overlay');
         
-        if(aiCandidates.length === 0) {
-            if(!paradoxMusicTriggered) {
+        if (aiCandidates.length === 0) {
+            if (!paradoxMusicTriggered) {
                 bgm.pause();
                 bgm = new Audio("https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3");
                 bgm.loop = true;
@@ -634,58 +726,59 @@
                 bgm.play().catch(e => {});
                 paradoxMusicTriggered = true;
             }
-            if(!zeroOverlayTriggered) {
-                flashOverlay.style.background = 'radial-gradient(circle, rgba(0, 255, 65, 0) 70%, rgba(0, 255, 65, 0.4) 100%)';
-                flashOverlay.style.opacity = '1';
-                setTimeout(() => { flashOverlay.style.opacity = '0'; }, 1500);
+            if (!zeroOverlayTriggered) {
+                _0x8.style.background = 'radial-gradient(circle, rgba(0, 255, 65, 0) 70%, rgba(0, 255, 65, 0.4) 100%)';
+                _0x8.style.opacity = '1';
+                setTimeout(() => { _0x8.style.opacity = '0'; }, 1500);
                 zeroOverlayTriggered = true;
                 startPoisonLoop();
             }
-            chanceTitleEl.style.display = 'none';
-            chanceBoxEl.style.borderColor = 'var(--green)';
-            catImg.style.opacity = '0'; catImg.style.filter = 'blur(2vh)';
-            turnCounter.style.color = 'var(--green)'; turnCounter.style.textShadow = '0 0 2vh var(--green)';
-            deadX.style.display = 'block'; 
+            _0x4.style.display = 'none';
+            _0x5.style.borderColor = 'var(--green)';
+            _0x6.style.opacity = '0'; _0x6.style.filter = 'blur(2vh)';
+            _0x1.style.color = 'var(--green)'; _0x1.style.textShadow = '0 0 2vh var(--green)';
+            _0x7.style.display = 'block'; 
         } else {
-            deadX.style.display = 'none';
-            if(poisonInterval) { clearInterval(poisonInterval); poisonInterval = null; }
+            _0x7.style.display = 'none';
+            if (poisonInterval) { clearInterval(poisonInterval); poisonInterval = null; }
 
-            let currentColor = 'var(--purple)';
-            let currentShadow = '0 0 2.5vh var(--purple)';
+            let _0xc1 = 'var(--purple)';
+            let _0xs1 = '0 0 2.5vh var(--purple)';
 
-            if (prob === 100) {
-                currentColor = 'var(--red)';
-                currentShadow = '0 0 2.5vh var(--red)';
-                if(!alarmTriggered) {
+            if (_0x2 === 100) {
+                _0xc1 = 'var(--red)';
+                _0xs1 = '0 0 2.5vh var(--red)';
+                if (!alarmTriggered) {
                     emergencySfx.play().catch(e=>{});
-                    flashOverlay.style.background = 'radial-gradient(circle, rgba(255, 0, 0, 0) 70%, rgba(255, 0, 0, 0.4) 100%)';
-                    flashOverlay.style.opacity = '1';
-                    setTimeout(() => { flashOverlay.style.opacity = '0'; }, 1500);
+                    _0x8.style.background = 'radial-gradient(circle, rgba(255, 0, 0, 0) 70%, rgba(255, 0, 0, 0.4) 100%)';
+                    _0x8.style.opacity = '1';
+                    setTimeout(() => { _0x8.style.opacity = '0'; }, 1500);
                     alarmTriggered = true;
                 }
-            } else if (prob >= 10 && prob <= 51) {
-                currentColor = 'var(--cyan)';
-                currentShadow = '0 0 2.5vh var(--cyan)';
+            } else if (_0x2 >= 10 && _0x2 <= 51) {
+                _0xc1 = 'var(--cyan)';
+                _0xs1 = '0 0 2.5vh var(--cyan)';
                 alarmTriggered = false;
             } else {
                 alarmTriggered = false;
             }
 
-            chanceValEl.style.color = currentColor;
-            chanceValEl.style.textShadow = currentShadow;
+            _0x3.style.color = _0xc1;
+            _0x3.style.textShadow = _0xs1;
             
-            chanceTitleEl.style.display = 'block';
-            chanceTitleEl.style.color = currentColor;
-            chanceTitleEl.style.textShadow = currentShadow;
+            _0x4.style.display = 'block';
+            _0x4.innerText = "Measuring Energy Level";
+            _0x4.style.color = _0xc1;
+            _0x4.style.textShadow = _0xs1;
             
-            chanceValEl.innerText = prob.toFixed(2) + "%";
-            chanceBoxEl.style.borderColor = currentColor;
-            turnCounter.style.color = currentColor;
-            const blurAmount = Math.max(0, (prob * 0.05));
-            const opacityAmount = Math.max(0.1, 1 - (prob / 100));
-            catImg.style.display = 'block'; catImg.style.opacity = opacityAmount;
-            catImg.style.filter = `blur(${blurAmount}vh)`; 
-            catImg.style.borderColor = currentColor;
+            _0x3.innerText = _0x2.toFixed(2) + "%";
+            _0x5.style.borderColor = _0xc1;
+            _0x1.style.color = _0xc1;
+            const _0xb1 = Math.max(0, (_0x2 * 0.05));
+            const _0xop1 = Math.max(0.1, 1 - (_0x2 / 100));
+            _0x6.style.display = 'block'; _0x6.style.opacity = _0xop1;
+            _0x6.style.filter = `blur(${_0xb1}vh)`; 
+            _0x6.style.borderColor = _0xc1;
         }
         
         document.getElementById('log-window').innerHTML = history.map(h => {
@@ -694,22 +787,22 @@
         }).join('');
         document.getElementById('log-window').scrollTop = document.getElementById('log-window').scrollHeight;
 
-        const slice = [...aiCandidates].sort(() => 0.5 - Math.random()).slice(0, 100);
-        const pixelateStrength = prob >= 25 ? 0 : (25 - prob) / 35; 
-        document.getElementById('cand-list').innerHTML = slice.map(c => `<div class="cand-item" style="filter: blur(${pixelateStrength}vh) contrast(180%);">${c}</div>`).join('');
+        const _0xslice = [...aiCandidates].sort(() => 0.5 - Math.random()).slice(0, 100);
+        const _0xp1 = _0x2 >= 25 ? 0 : (25 - _0x2) / 35; 
+        document.getElementById('cand-list').innerHTML = _0xslice.map(c => `<div class="cand-item" style="filter: blur(${_0xp1}vh) contrast(180%);">${c}</div>`).join('');
 
-        const statusEl = document.getElementById('status');
-        const entBtn = document.getElementById('ent-btn');
-        if(turnCount <= 0) {
-            entBtn.disabled = true;
-            statusEl.innerText = "측정 완료 (관측만 가능)";
-            statusEl.style.animation = "none";
-            statusEl.style.color = "var(--red)";
-            statusEl.style.textShadow = "0 0 1vh var(--red)";
+        const _0xst = document.getElementById('status');
+        const _0xeb = document.getElementById('ent-btn');
+        if (turnCount <= 0) {
+            _0xeb.disabled = true;
+            _0xst.innerText = "측정 완료 (관측만 가능)";
+            _0xst.style.animation = "none";
+            _0xst.style.color = "var(--red)";
+            _0xst.style.textShadow = "0 0 1vh var(--red)";
         } else {
-            entBtn.disabled = false;
-            statusEl.innerText = "고양이 위치 관측 중...";
-            statusEl.style.animation = "neonShift 10s infinite alternate linear";
+            _0xeb.disabled = false;
+            _0xst.innerText = turnCount > 0 ? "고양이 위치 관측 중..." : "준비 완료";
+            _0xst.style.animation = "neonShift 10s infinite alternate linear";
         }
     }
 
@@ -757,95 +850,117 @@
         setTimeout(() => { const obsInput = document.getElementById('obs-num'); if(obsInput){ obsInput.value = ""; obsInput.focus(); } }, 10);
     }
 
+    // 관측 제출 난독화
     function submitObs() {
-        const guess = document.getElementById('obs-num').value;
-        if(guess.length === 4) {
+        const _0xinput = document.getElementById('obs-num').value;
+        if (_0xinput.length === 4) {
             playClick();
-            let realSecret = aiCandidates[Math.floor(Math.random() * aiCandidates.length)];
-            if(guess === realSecret) {
+            let _0xtarget = aiCandidates[Math.floor(Math.random() * aiCandidates.length)];
+            if (_0xinput === _0xtarget) {
                 successSfx.play().catch(e=>{});
-                if(successLoopInterval) clearInterval(successLoopInterval);
-                successLoopInterval = setInterval(() => {
-                    successSfx.currentTime = 0;
-                    successSfx.play().catch(e=>{});
-                }, 6000);
-                
+                if (successLoopInterval) clearInterval(successLoopInterval);
+                successLoopInterval = setInterval(() => { successSfx.currentTime = 0; successSfx.play().catch(e=>{}); }, 6000);
                 renderEndGame("Quantum Collapse", "승리", `관측 성공! 당신의 고양이는 살아있었습니다<br>당신은 고양이의 위치만을 알 수 있었습니다`, 'var(--cyan)', true, false);
             } else {
                 failSfx.play().catch(e=>{});
-                if(failLoopInterval) clearInterval(failLoopInterval);
-                failLoopInterval = setInterval(() => {
-                    failSfx.currentTime = 0;
-                    failSfx.play().catch(e=>{});
-                }, 6000);
-                
+                if (failLoopInterval) clearInterval(failLoopInterval);
+                failLoopInterval = setInterval(() => { failSfx.currentTime = 0; failSfx.play().catch(e=>{}); }, 6000);
                 renderEndGame("Quantum Collapse", "패배", `관측 실패! 당신의 고양이는 사라졌습니다<br>당신은 고양이의 운동량만을 알 수 있었습니다`, 'var(--red)', false, false);
             }
         }
     }
 
-    function renderEndGame(type, result, msg, color, isWin, isParadox) {
-        const winGif = "cat in the box.gif";
-        const paradoxGif = "Neon cat 2.gif";
-        const loseImg = "box.gif";
-        let mediaUrl = isParadox ? paradoxGif : (isWin ? winGif : loseImg);
-        
-        let emojiLanes = "";
-        if(isParadox) {
-            const longLane = "🐈 ".repeat(22);
-            emojiLanes = `
-                <div class="emoji-lane" style="top:15vh; animation: slide-h 24s linear infinite; animation-delay: -3s;">${longLane}</div>
-                <div class="emoji-lane" style="bottom:15vh; animation: slide-h 29s linear infinite reverse; animation-delay: -7s;">${longLane}</div>
-                <div class="emoji-lane" style="left:10vw; animation: slide-v 22s linear infinite; animation-delay: -12s;">${longLane.split(' ').join('<br>')}</div>
-                <div class="emoji-lane" style="right:10vw; animation: slide-v 26s linear infinite reverse; animation-delay: -1s;">${longLane.split(' ').join('<br>')}</div>
-            `;
+    // 엔딩 렌더링 난독화
+    function renderEndGame(_0xa, _0xb, _0xc, _0xd, _0xe, _0xf) {
+        const _0xwin = "cat in the box.gif", _0xpar = "Neon cat 2.gif", _0xlos = "box.gif";
+        let _0xmed = _0xf ? _0xpar : (_0xe ? _0xwin : _0xlos);
+        let _0xlanes = "";
+        if (_0xf) {
+            const _0xlong = "🐈 ".repeat(22);
+            _0xlanes = `<div class="emoji-lane" style="top:15vh; animation: slide-h 24s linear infinite;">${_0xlong}</div><div class="emoji-lane" style="bottom:15vh; animation: slide-h 29s linear infinite reverse;">${_0xlong}</div>`;
         }
-
-        let subButtons = "";
-        if (isParadox) {
-            subButtons = `<button onclick="window.showCredits()" style="font-family: 'Bebas Neue', cursive; width:65vh; padding:2vh 0; margin-top:5vh; background:#222; color:${color}; border:0.4vh solid ${color}; cursor:pointer; font-size:5vh; border-radius:2vh; font-weight:bold; box-shadow: 0 0 2vh ${color}; z-index:100; letter-spacing:0.3vh;">Credits</button>`;
+        let _0xsub = "";
+        if (_0xf) {
+            _0xsub = `<button onclick="window.showCredits()" style="font-family:'Bebas Neue';width:65vh;padding:2vh 0;margin-top:5vh;background:#222;color:${_0xd};border:0.4vh solid ${_0xd};cursor:pointer;font-size:5vh;border-radius:2vh;box-shadow:0 0 2vh ${_0xd};">Credits</button>`;
         } else {
-            const tipType = isWin ? 'success' : 'fail';
-            subButtons = `
-                <div style="display:flex; flex-direction:column; gap: 2vh; align-items: center; margin-top:4vh; width: 62vh; z-index:100;">
-                    <button onclick="window.showTips('${tipType}')" style="font-family: 'Bebas Neue', cursive; width:100%; padding:1.2vh 0; background:#333; color:${color}; border:0.2vh solid ${color}; cursor:pointer; font-size:4vh; border-radius:1.5vh; font-weight:bold; letter-spacing:0.2vh;">TIPS</button>
-                    <div style="display:flex; gap: 2.5vh; width: 100%;">
-                        <button onclick="location.reload()" style="font-family: 'Bebas Neue', cursive; flex:1; padding:1.2vh 0; background:#222; color:#fff; border:0.2vh solid #444; cursor:pointer; font-size:3.2vh; border-radius:1.5vh; letter-spacing:0.1vh;">Main Menu</button>
-                        <button onclick="restartDirectly()" style="font-family: 'Bebas Neue', cursive; flex:2; padding:1.2vh 0; background:#222; color:#fff; border:0.2vh solid ${color}; cursor:pointer; font-size:3.2vh; border-radius:1.5vh; letter-spacing:0.1vh;">Restart</button>
-                    </div>
-                </div>`;
+            const _0xtip = _0xe ? 'success' : 'fail';
+            _0xsub = `<div style="display:flex;flex-direction:column;gap:2vh;align-items:center;margin-top:4vh;width:62vh;"><button onclick="window.showTips('${_0xtip}')" style="font-family:'Bebas Neue';width:100%;padding:1.2vh 0;background:#333;color:${_0xd};border:0.2vh solid ${_0xd};cursor:pointer;font-size:4vh;border-radius:1.5vh;">TIPS</button><div style="display:flex;gap:2.5vh;width:100%;"><button onclick="location.reload()" style="font-family:'Bebas Neue';flex:1;padding:1.2vh 0;background:#222;color:#fff;border:0.2vh solid #444;cursor:pointer;font-size:3.2vh;border-radius:1.5vh;">Main Menu</button><button onclick="restartDirectly()" style="font-family:'Bebas Neue';flex:2;padding:1.2vh 0;background:#222;color:#fff;border:0.2vh solid ${_0xd};cursor:pointer;font-size:3.2vh;border-radius:1.5vh;">Restart</button></div></div>`;
         }
-
-        document.body.innerHTML = `
-            <div id="version-tag">1.1 version</div>
-            ${emojiLanes}
-            <div id="sound-control" style="z-index:20000;">
-                <span class="sound-icon">♪</span>
-                <input type="range" id="volume-slider-end" min="0" max="1" step="0.01" value="${currentVolume}" oninput="adjustVolume(this.value)">
-                <span class="sound-icon" style="font-size:1vh;">VOL</span>
-            </div>
-            <div id="credit-overlay">
-                <div class="side-cat-box"><img src="귀여운고양이도트2.jpg" class="side-cat-img"></div>
-                <div id="credit-container" onmousedown="accelerateCredits(event)" onmouseup="normalizeCredits(event)">
-                    <div id="credit-content"></div>
-                </div>
-                <div class="side-cat-box"><img src="귀여운고양이도트3.jpg" class="side-cat-img" style="animation-delay: -2s;"></div>
-                <div class="credit-esc">Press ESC to Close</div>
-            </div>
-            <div style="display:flex; flex-direction:column; align-items:center; justify-content:flex-start; height:100vh; text-align:center; box-sizing: border-box; position:relative; z-index:50; padding: 3vh 0; overflow: hidden;">
-                <img src="${mediaUrl}" style="border:0.4vh solid ${color}; border-radius:4vh; box-shadow: 0 0 3vh ${color}; width: 40vh; height: 40vh; object-fit: cover; margin-bottom: 2vh;">
-                <h1 style="font-size:6vh; color:${color}; margin: 1vh 0; text-shadow:0 0 2vh ${color};">${type}</h1>
-                <h2 style="font-size:3.5vh; color:#fff; margin-bottom: 1vh;">${result}</h2>
-                <p style="color:${isParadox ? color : '#aaa'}; font-size:2.2vh; max-width:80vh; line-height:1.4; margin: 1vh 0;">${msg}</p>
-                ${subButtons}
-            </div>`;
-            
-        document.getElementById('volume-slider-end').addEventListener('input', (e) => {
-            adjustVolume(e.target.value);
-        });
+        document.body.innerHTML = `<div id="version-tag">1.1 version</div>${_0xlanes}<div id="sound-control" style="z-index:20000;"><span class="sound-icon">♪</span><input type="range" id="volume-slider-end" min="0" max="1" step="0.01" value="${currentVolume}" oninput="adjustVolume(this.value)"><span class="sound-icon" style="font-size:1vh;">VOL</span></div><div id="credit-overlay"><div class="side-cat-box"><img src="귀여운고양이도트2.jpg" class="side-cat-img"></div><div id="credit-container" onmousedown="accelerateCredits(event)" onmouseup="normalizeCredits(event)"><div id="credit-content"></div></div><div class="side-cat-box"><img src="귀여운고양이도트3.jpg" class="side-cat-img" style="animation-delay:-2s;"></div><div class="credit-esc">Press ESC to Close</div></div><div style="display:flex;flex-direction:column;align-items:center;justify-content:flex-start;height:100vh;text-align:center;padding:3vh 0;overflow:hidden;position:relative;z-index:50;"><img src="${_0xmed}" style="border:0.4vh solid ${_0xd};border-radius:4vh;box-shadow:0 0 3vh ${_0xd};width:40vh;height:40vh;object-fit:cover;margin-bottom:2vh;"><h1 style="font-size:6vh;color:${_0xd};margin:1vh 0;text-shadow:0 0 2vh ${_0xd};">${_0xa}</h1><h2 style="font-size:3.5vh;color:#fff;margin-bottom:1vh;">${_0xb}</h2><p style="color:${_0xf?_0xd:'#aaa'};font-size:2.2vh;max-width:80vh;line-height:1.4;margin:1vh 0;">${_0xc}</p>${_0xsub}</div>`;
+        document.getElementById('volume-slider-end').addEventListener('input', (e) => { adjustVolume(e.target.value); });
     }
 
-    // ...크레딧 및 기타 타이머 로직 유지...
+    let creditScrollInterval = null;
+    let creditY = 0;
+    let creditSpeed = 1;
+
+    window.showCredits = function() {
+        const overlay = document.getElementById('credit-overlay');
+        const content = document.getElementById('credit-content');
+        if (!overlay || !content) return;
+        
+        const text = `제 첫 게임,  슈뢰딩거 베이스볼을 끝까지 즐겨주셔서 정말 감사합니다!
+사실 보잘것 없는 게임이지만, 어릴 때부터 꿈꾸던 '나만의 게임 만들기'를 
+드디어 해볼 수 있어서 만드는 내내 정말 즐거웠습니다.
+
+이 게임의 아이디어는 가짜 숫자야구게임의 변형룰에서 시작됐습니다. 
+처음엔 사람간에 치열한 두뇌 게임을 생각했죠. 수비자가 제한없이 거짓말을 할 수 있고, 
+공격자는 '이거는 말이 안 된다!' 싶을 때 '모순'을 선언해서 끝내는 방식이었거든요. 
+반대로 수비자가 모순이 아니라는 걸 '반증'하면 이기는 룰으로요.
+
+근데 막상 AI와 시뮬레이션을 돌려보니까 생각보다 어렵더라고요. 
+단 3턴 만에 논리적 모순이 발생하기도 하고 오기도, 완벽하게 거짓말을 섞어가며 카운트를 준다는 게 
+생각보다 엄청난 사고력을 필요로 한다는 걸 깨달았습니다. 
+"완벽하게 거짓말하는 상대를 이기려면 몇 번이나 걸릴까?" 라는 질문에서 이 게임이 구상되었습니다.
+
+이름도 처음엔 '패러독스 베이스볼' 같은 걸 생각했는데, "슈뢰딩거 베이스볼"이 꽂히더라고요. 
+모든 숫자의 가능성이 중첩되어 있다가, 관측을 자세히할수록 가능성이 줄어들고 
+결국 하나의 숫자로 수렴하는 양자역학 컨셉! 제가 원하던 느낌이랑 딱 맞아서 파바박 만들어봤습니다.
+
+사실 전 프로그래밍 지식이 제로에 가까워서 AI를 쓴다고 해도 이렇게 빠르게 될 줄은 몰랐습니다. 
+구상에 반나절, 코드 짜는 데 하루, 마무리에 한나절 정도 걸렸는데, 
+막히는 걸 바로바로 물어보면서 코드를 만들어갈 수 있어서 빨랐던 것 같습니다.
+
+마음 같아서는 '개쳐귀여운 고양이' 이미지랑 컨셉을 막 쏟아붓고 싶었는데... 생각보다 어렵더라고요. 
+이미지를 찾아도 게임에 넣으니깐 제가 원하는 느낌이 안 살아서 결국 지금같은 모습이 됐습니다. 
+
+세상이 참 빠르게 변하는 것 같습니다. 코딩 문외한인 제가 게임을 만들수 있다니요.
+앞으로도 재밌는 아이디어가 떠오르면 게임을 만들어 보겠습니다. 
+어쩌면 슈뢰딩거 베이스볼 PVP버젼도 만들 수 있을 것 같습니다.
+
+이상 게임은 끝입니다. 
+감사합니다! 고양이는 정말 귀엽네요...
+고양이 사진 찾으면서 주워온 귀여운 고양이짤이라도 구경하다 가세요! :) `;
+        
+        content.innerHTML = `
+            <div>${text}</div>
+            <img src="귀여운고양이.jpg" onclick="playNyaBgm()" style="width:67.5vh; height:auto; margin-top:5vh; border-radius:2vh; border:0.4vh solid var(--green); box-shadow: 0 0 2vh var(--green); cursor:pointer;">
+            <img src="Aview.png" class="credit-logo">
+        `;
+        overlay.style.display = 'flex';
+        creditY = window.innerHeight;
+        creditSpeed = 1;
+        
+        if (creditScrollInterval) clearInterval(creditScrollInterval);
+        creditScrollInterval = setInterval(() => {
+            creditY -= creditSpeed;
+            content.style.transform = `translateY(${creditY}px)`;
+            if (creditY < -content.scrollHeight) {
+                clearInterval(creditScrollInterval);
+            }
+        }, 16);
+    };
+
+    window.accelerateCredits = function(e) { if(e) e.stopPropagation(); creditSpeed = 5; };
+    window.normalizeCredits = function(e) { if(e) e.stopPropagation(); creditSpeed = 1; };
+    window.closeCredits = function() {
+        const overlay = document.getElementById('credit-overlay');
+        if(overlay) {
+            overlay.style.display = 'none';
+            if (creditScrollInterval) clearInterval(creditScrollInterval);
+        }
+    };
+
     setInterval(() => {
         document.querySelectorAll('.cand-item').forEach(item => {
             const moveX = (Math.random()-0.5)*1.5; const moveY = (Math.random()-0.5)*1.5;
@@ -854,13 +969,13 @@
         const turnCounter = document.getElementById('turn-counter');
         if(turnCounter) {
             if (turnCount > 0) {
-                const intensity = 15; // 요청된 계수 반영
+                const intensity = 15; 
                 const tMoveX = (Math.random()-0.5) * intensity;
                 const tMoveY = (Math.random()-0.5) * intensity;
                 turnCounter.style.transform = `translate(${tMoveX}px, ${tMoveY}px)`;
             } else { turnCounter.style.transform = `translate(0px, 0px)`; }
         }
-    }, 100); // 떨림 효과를 위해 주기 단축
+    }, 2000);
 </script>
 </body>
 </html>
