@@ -258,7 +258,7 @@
         .credit-esc { position: fixed; bottom: 3vh; right: 3vh; color: #666; font-size: 1.5vh; z-index: 15003; }
 
         #flash-overlay { 
-            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 20000; opacity: 0; background: #000;
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 99999; opacity: 0; background: #000;
         }
         #dead-x { 
             display: none; position: absolute; top: 62%; left: 50%; transform: translate(-50%, -50%); 
@@ -744,10 +744,11 @@
                 _0xlightsOffSfx.currentTime = 0;
                 _0xlightsOffSfx.play().catch(e=>{});
 
-                // 즉각 암전 후 3초 뒤 페이드아웃
+                // 레이어 즉시 암전 (transition 제거 후 opacity 1)
                 flashOverlay.style.transition = 'none';
                 flashOverlay.style.opacity = '1';
                 
+                // 3초 대기 후 서서히 밝아짐
                 setTimeout(() => { 
                     flashOverlay.style.transition = 'opacity 1.5s ease';
                     flashOverlay.style.opacity = '0'; 
