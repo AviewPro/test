@@ -365,11 +365,35 @@
 </div>
 
 <script>
-    let textData = null;
+    // textData가 로드되지 않았을 경우를 대비한 기본값 설정
+    let textData = {
+        "tutorial": {
+            "button_finish": "START GAME",
+            "steps": [
+                { "step": 1, "title": "숫자 입력", "desc": "0~9 사이의 중복되지 않는 숫자 4개를 입력하세요." },
+                { "step": 2, "title": "결과 확인", "desc": "ENT를 눌러 측정 결과를 확인하세요. S는 위치와 숫자가 모두 맞음, B는 숫자만 맞음을 뜻합니다." },
+                { "step": 3, "title": "로그 기록", "desc": "이전 측정 기록들이 여기에 남습니다." },
+                { "step": 4, "title": "양자 구름", "desc": "현재 가능성이 남아있는 모든 숫자 후보군입니다." },
+                { "step": 5, "title": "관측 (OBS)", "desc": "충분히 압축되었다고 생각되면 OBS 버튼을 눌러 최종 위치를 확정하세요." },
+                { "step": 6, "title": "턴 제한", "desc": "8번의 측정 기회가 주어집니다. 신중하게 선택하세요!" }
+            ]
+        },
+        "tips": {
+            "success": [{ "title": "승리!", "desc": "고양이를 안전하게 관측했습니다." }],
+            "fail": [{ "title": "실패", "desc": "고양이는 상자 안에 없었습니다." }]
+        },
+        "endings": {
+            "win": { "type": "SUCCESS", "result": "CAT OBSERVED", "message": "축하합니다! 고양이를 발견했습니다." },
+            "lose": { "type": "FAILURE", "result": "EMPTY BOX", "message": "아쉽네요. 고양이는 다른 곳에 있었나 봅니다." },
+            "paradox": { "type": "PARADOX", "result": "ERROR 404", "message": "고양이가 존재하지 않는 상태가 되었습니다. 시스템 오류." }
+        },
+        "dev_story": ["Created by Gemini & Grok", "Enjoy Schrödinger Baseball!"]
+    };
+
     fetch('textdata.json')
         .then(response => response.json())
         .then(data => { textData = data; })
-        .catch(error => console.error('Error loading textdata:', error));
+        .catch(error => console.warn('Using default text data (json load failed)'));
 
     const firebaseConfig = { apiKey: "AIzaSyCvxUeqc28cRZ8RL4jpAwtakMxRo5d6zbU", authDomain: "aviewpro.firebaseapp.com", databaseURL: "https://aviewpro-default-rtdb.asia-southeast1.firebasedatabase.app", projectId: "aviewpro", storageBucket: "aviewpro.firebasestorage.app", messagingSenderId: "592622610945", appId: "1:592622610945:web:7d56b09e966a4faac62e00", measurementId: "G-NZQ5ZFXG2F" };
 
@@ -491,16 +515,14 @@
     }
 
     function startTutorial() {
-        if(!textData) return;
         isTutorial = true; currentTipType = ""; tutorialStep = 1;
-        startGame();
+        startGame(); // 게임 화면으로 먼저 이동
         document.getElementById('obs-btn').disabled = true;
         document.getElementById('tutorial-overlay').style.display = 'flex';
         applyTutorialEffect();
     }
 
     window.showTips = function(type) {
-        if(!textData) return;
         playClick();
         isTutorial = false;
         currentTipType = type;
@@ -821,7 +843,7 @@
     }
 
     function clickObs() {
-        if(isTutorial || !textData) return;
+        if(isTutorial) return;
         playSpecialClick();
         if(aiCandidates.length === 0) {
             meowCount = 0; 
@@ -950,7 +972,6 @@
     let creditSpeed = 0.55;
 
     window.showCredits = function() {
-        if(!textData) return;
         const overlay = document.getElementById('credit-overlay');
         const content = document.getElementById('credit-content');
         if (!overlay || !content) return;
