@@ -77,15 +77,15 @@
         .setup-box-container { position: relative; width: 35vh; margin-bottom: 2vh; }
         .setup-cat { width: 35vh; height: 35vh; border-radius: 4vh; border: 0.4vh solid var(--green); object-fit: cover; animation: neonShift 10s infinite alternate linear; display: block; }
         
-        .setup-btn { font-family: 'Bebas Neue', cursive; width: 35vh; color: #000; font-weight: 900; height: 7vh; font-size: 3.2vh; border-radius: 1.5vh; cursor: pointer; border: none; animation: neonShiftBg 10s infinite alternate linear; margin-top: 1vh; transition: transform 0.1s, filter 0.2s; letter-spacing: 0.1vh; }
+        .setup-btn { font-family: 'Bebas Neue', cursive; width: 35vh; color: #000; font-weight: 900; height: 7vh; font-size: 3.2vh; border-radius: 1.5vh; cursor: pointer; border: none; animation: neonShiftBg 10s infinite alternate linear; transition: transform 0.1s, filter 0.2s; letter-spacing: 0.1vh; }
         .setup-btn:hover { transform: scale(1.02); filter: brightness(1.2); }
         .setup-btn:active { transform: scale(0.98); }
 
-        .tutorial-btn { font-family: 'Bebas Neue', cursive; width: 35vh; background: #444; color: #fff; font-weight: 700; height: 5vh; font-size: 2.5vh; border-radius: 1.5vh; cursor: pointer; border: 0.2vh solid #666; margin-bottom: 1vh; transition: 0.2s; letter-spacing: 0.1vh; }
+        .tutorial-btn { font-family: 'Bebas Neue', cursive; width: 35vh; background: #444; color: #fff; font-weight: 700; height: 5vh; font-size: 2.5vh; border-radius: 1.5vh; cursor: pointer; border: 0.2vh solid #666; margin-bottom: 2vh; transition: 0.2s; letter-spacing: 0.1vh; }
         .tutorial-btn:hover { background: #555; transform: scale(1.02); }
         .tutorial-btn:active { transform: scale(0.98); }
 
-        .new-keyhole { width: 35vh; height: auto; margin-top: 1.5vh; animation: keyholeNeonShift 10s infinite alternate linear; }
+        .new-keyhole { width: 35vh; height: auto; margin-top: 2vh; animation: keyholeNeonShift 10s infinite alternate linear; }
 
         #game-box, #info-panel { width: 50vh; height: 75vh; padding: 2.5vh; border-radius: 2.5vh; box-sizing: border-box; display: flex; flex-direction: column; flex-shrink: 0; margin-bottom: 3vh; }
         #game-box { background: rgba(17, 17, 17, 0.9); border: 0.1vh solid #333; position: relative; display: none; }
@@ -300,7 +300,7 @@
             <img src="Neon cat.gif" class="setup-cat">
         </div>
         <button onclick="startTutorial()" class="tutorial-btn">How to Play</button>
-        <button onclick="startGame()" class="setup-btn" style="background-color: var(--green); box-shadow: 0 0 1.5vh var(--green); animation: none; order: -1; margin-bottom: 2vh;">Start Single Mode</button>
+        <button onclick="startGame()" class="setup-btn">Start Single Mode</button>
         <img src="Aview.png" class="new-keyhole">
     </div>
     <div id="setup-footer">
@@ -332,7 +332,7 @@
                     <div id="chance-val" class="chance-value">--.--%</div>
                 </div>
                 <div class="prob-cat-container">
-                    <div id="turn-counter">8</div>
+                    <div id="turn-counter">7</div>
                     <img id="prob-cat-img" src="Neon cat.gif" class="prob-cat">
                 </div>
             </div>
@@ -359,7 +359,7 @@
 <script>
     const firebaseConfig = { apiKey: "AIzaSyCvxUeqc28cRZ8RL4jpAwtakMxRo5d6zbU", authDomain: "aviewpro.firebaseapp.com", databaseURL: "https://aviewpro-default-rtdb.asia-southeast1.firebasedatabase.app", projectId: "aviewpro", storageBucket: "aviewpro.firebasestorage.app", messagingSenderId: "592622610945", appId: "1:592622610945:web:7d56b09e966a4faac62e00", measurementId: "G-NZQ5ZFXG2F" };
 
-    let aiCandidates = [], history = [], inputStr = "", turnCount = 8;
+    let aiCandidates = [], history = [], inputStr = "", turnCount = 7;
     let isTutorial = false, tutorialStep = 0, currentTipType = "";
     let paradoxMusicTriggered = false, alarmTriggered = false, zeroOverlayTriggered = false;
     let currentVolume = 0.15;
@@ -467,7 +467,7 @@
     }
 
     function resetGameState() {
-        aiCandidates = []; history = []; inputStr = ""; turnCount = 8; meowCount = 0;
+        aiCandidates = []; history = []; inputStr = ""; turnCount = 7; meowCount = 0;
         paradoxMusicTriggered = false; alarmTriggered = false; zeroOverlayTriggered = false;
         if(poisonInterval) { clearInterval(poisonInterval); poisonInterval = null; }
         for(let i=0; i<=9999; i++){
@@ -507,7 +507,8 @@
         const tutOverlay = document.getElementById('tutorial-overlay');
         if (tutOverlay) {
             tutOverlay.style.display = 'flex';
-            document.getElementById('tut-esc-guide').style.display = 'none';
+            const escGuide = document.getElementById('tut-esc-guide');
+            if(escGuide) escGuide.style.display = 'none';
             applyTipEffect();
         }
     };
@@ -590,7 +591,7 @@
             document.getElementById('obs-btn').classList.add('tutorial-highlight');
         } else if (tutorialStep === 6) {
             title.innerText = "6. 횟수 제한 및 엔딩";
-            desc.innerHTML = "양자고양이는 언제나 가장 잘 숨을 수 있는 좌표로 도망칩니다.<br><span style='color:var(--red); font-weight:bold;'>8회의 좌표 측정만으로 고양이의 좌표를 찾아보세요!</span><br>고양이의 좌표를 정확히 측정하면 색다른 엔딩이 나올지도?";
+            desc.innerHTML = "양자고양이는 언제나 가장 잘 숨을 수 있는 좌표로 도망칩니다.<br><span style='color:var(--red); font-weight:bold;'>7회의 좌표 측정만으로 고양이의 좌표를 찾아보세요!</span><br>고양이의 좌표를 정확히 측정하면 색다른 엔딩이 나올지도?";
             document.getElementById('info-panel').classList.remove('tutorial-dim');
             turnCounter.classList.add('tutorial-highlight-turn');
             nextBtn.classList.add('btn-cyan');
@@ -653,7 +654,6 @@
         }
     }
 
-    // AI 로직 난독화
     function aiRespond(_0x1a2b) {
         const _0x3c4d = {};
         aiCandidates.forEach(_0x5e6f => {
@@ -705,7 +705,6 @@
         }, 150);
     }
 
-    // UI 업데이트 난독화
     function updateUI() {
         const _0x1 = document.getElementById('turn-counter');
         _0x1.innerText = turnCount;
@@ -850,7 +849,6 @@
         setTimeout(() => { const obsInput = document.getElementById('obs-num'); if(obsInput){ obsInput.value = ""; obsInput.focus(); } }, 10);
     }
 
-    // 관측 제출 난독화
     function submitObs() {
         const _0xinput = document.getElementById('obs-num').value;
         if (_0xinput.length === 4) {
@@ -870,7 +868,6 @@
         }
     }
 
-    // 엔딩 렌더링 난독화
     function renderEndGame(_0xa, _0xb, _0xc, _0xd, _0xe, _0xf) {
         const _0xwin = "cat in the box.gif", _0xpar = "Neon cat 2.gif", _0xlos = "box.gif";
         let _0xmed = _0xf ? _0xpar : (_0xe ? _0xwin : _0xlos);
