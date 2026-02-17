@@ -295,7 +295,7 @@
 </head>
 <body oncontextmenu="return false" oncopy="return false" oncut="return false">
 
-<div id="version-tag">1.3 Version</div>
+<div id="version-tag">0.5 Version</div>
 <div id="flash-overlay"></div>
 
 <div id="sound-control">
@@ -330,7 +330,7 @@
 <div class="game-container">
     <div id="setup">
         <div class="setup-box-container">
-            <img src="Neon cat.gif" class="setup-cat">
+            <img src="귀여운고양이도트4.jpg" class="setup-cat">
         </div>
         <button onclick="_0x1d2e()" class="tutorial-btn">How to Play</button>
         <button onclick="_0x4c5b()" class="setup-btn">Start Single Mode</button>
@@ -365,8 +365,8 @@
                     <div id="chance-val" class="chance-value">--.--%</div>
                 </div>
                 <div class="prob-cat-container">
-                    <div id="turn-counter">8</div>
-                    <img id="prob-cat-img" src="Neon cat.gif" class="prob-cat">
+                    <div id="turn-counter">6</div>
+                    <img id="prob-cat-img" src="귀여운고양이도트4.jpg" class="prob-cat">
                 </div>
             </div>
             <div id="candidates-box">
@@ -399,7 +399,7 @@
 
     const firebaseConfig = { apiKey: "AIzaSyCvxUeqc28cRZ8RL4jpAwtakMxRo5d6zbU", authDomain: "aviewpro.firebaseapp.com", databaseURL: "https://aviewpro-default-rtdb.asia-southeast1.firebasedatabase.app", projectId: "aviewpro", storageBucket: "aviewpro.firebasestorage.app", messagingSenderId: "592622610945", appId: "1:592622610945:web:7d56b09e966a4faac62e00", measurementId: "G-NZQ5ZFXG2F" };
 
-    let _0xaiCandidates = [], _0xhistory = [], _0xinputStr = "", _0xturnCount = 8;
+    let _0xaiCandidates = [], _0xhistory = [], _0xinputStr = "", _0xturnCount = 6;
     let _0xisTutorial = false, _0xtutorialStep = 0, _0xcurrentTipType = "";
     let _0xparadoxMusicTriggered = false, _0xalarmTriggered = false, _0xzeroOverlayTriggered = false;
     let _0xcurrentVolume = 0.15;
@@ -498,10 +498,9 @@
     }
 
     function _0xresGm() {
-        _0xaiCandidates = []; _0xhistory = []; _0xinputStr = ""; _0xturnCount = 8; _0xmeowCount = 0;
+        _0xaiCandidates = []; _0xhistory = []; _0xinputStr = ""; _0xturnCount = 6; _0xmeowCount = 0;
         _0xparadoxMusicTriggered = false; _0xalarmTriggered = false; _0xzeroOverlayTriggered = false;
         if(_0xpoisonInterval) { clearInterval(_0xpoisonInterval); _0xpoisonInterval = null; }
-        // 3자리 숫자야구 후보군 생성 (720가지)
         for(let i=0; i<=999; i++){
             let n = i.toString().padStart(3, '0');
             if(new Set(n).size === 3) _0xaiCandidates.push(n);
@@ -660,7 +659,6 @@
 
     function _0x9b8a(n) { 
         _0xplayClick(); 
-        // 3자리 입력으로 제한
         if(_0xinputStr.length < 3 && !_0xinputStr.includes(n)) { 
             _0xinputStr += n; 
             document.getElementById('display').innerText = _0xinputStr; 
@@ -673,7 +671,6 @@
     function _0xclrIn(isSpecial) { if(!isSpecial) _0xplayClick(); _0xinputStr = ""; document.getElementById('display').innerText = "---"; }
     
     function _0xentCli(isSpecial) {
-        // 3자리 입력 체크
         if(_0xinputStr.length === 3 && _0xturnCount > 0) {
             if(!isSpecial) _0xplayClick();
             const res = _0xaiRes(_0xinputStr);
@@ -689,7 +686,6 @@
         const outcomes = {};
         _0xaiCandidates.forEach(cand => {
             let s=0, b=0;
-            // 3자리 S/B 로직
             for(let i=0; i<3; i++){ if(guess[i] === cand[i]) s++; else if(cand.includes(guess[i])) b++; }
             const key = `${s}S${b}B`;
             if(!outcomes[key]) outcomes[key] = [];
@@ -697,11 +693,10 @@
         });
         let bestKey = ""; let maxCount = -1;
         for(let key in outcomes) {
-            if(key === "3S0B") continue; // 3S0B(정답)는 무조건 마지막까지 피함
+            if(key === "3S0B") continue; 
             if(outcomes[key].length > maxCount) { maxCount = outcomes[key].length; bestKey = key; }
         }
         if(!bestKey || _0xaiCandidates.length <= 1) {
-            // 더 이상 피할 곳이 없으면 거짓말 판정
             const fakeS = Math.floor(Math.random() * 2);
             const fakeB = Math.floor(Math.random() * 2);
             bestKey = `${fakeS}S${fakeB}B`;
@@ -910,7 +905,6 @@
         const guess = document.getElementById('obs-num').value;
         if(guess.length === 3) {
             _0xplayClick();
-            // 남은 후보 중 하나를 랜덤하게 정답으로 확정 (양자 붕괴)
             let realSecret = _0xaiCandidates[Math.floor(Math.random() * _0xaiCandidates.length)];
             if(guess === realSecret) {
                 _0xsuccessSfx.play().catch(e=>{});
@@ -955,7 +949,7 @@
 
         let subButtons = "";
         if (isParadox) {
-            subButtons = `<button onclick="window.showCredits()" style="font-family: 'Bebas Neue', cursive; width:65vh; padding:2vh 0; margin-top:5vh; background:#222; color:${color}; border:0.4vh solid ${color}; cursor:pointer; font-size:5vh; border-radius:2vh; font-weight:bold; box-shadow: 0 0 2vh ${color}; z-index:100; letter-spacing:0.3vh;">Credits</button>`;
+            subButtons = `<button onclick="window.open('https://aviewpro.github.io/schrodinger-baseball/', '_blank')" style="font-family: 'Bebas Neue', cursive; width:65vh; padding:2vh 0; margin-top:5vh; background:#222; color:${color}; border:0.4vh solid ${color}; cursor:pointer; font-size:5vh; border-radius:2vh; font-weight:bold; box-shadow: 0 0 2vh ${color}; z-index:100; letter-spacing:0.3vh;">실전에 도전하기</button>`;
         } else {
             const tipType = isWin ? 'success' : 'fail';
             subButtons = `
@@ -969,7 +963,7 @@
         }
 
         document.body.innerHTML = `
-            <div id="version-tag">1.3 Version</div>
+            <div id="version-tag">0.5 Version</div>
             ${emojiLanes}
             <div id="sound-control" style="z-index:20000;">
                 <span class="sound-icon">♪</span>
