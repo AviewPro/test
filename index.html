@@ -437,7 +437,7 @@
         _0xfailSfx.volume = Math.min(1.0, _0xcurrentVolume * 3.0); 
         _0xsuccessSfx.volume = _0xcurrentVolume;
         _0xspecialClickSfx.volume = Math.min(1.0, _0xcurrentVolume * 3.0);
-        _0xnyaBgmSfx.volume = _0xcurrentVolume * 0.6;
+        _0xnyaBgmSfx.volume = _0xcurrentVolume * 0.6; 
         _0xlightsOffSfx.volume = Math.min(1.0, _0xcurrentVolume * 1.5);
     }
     
@@ -459,7 +459,7 @@
     function _0xplayNyaBgm() {
         if(_0xbgm) _0xbgm.pause();
         _0xbgm = _0xnyaBgmSfx;
-        _0xbgm.volume = _0xcurrentVolume * 0.6;
+        _0xbgm.volume = _0xcurrentVolume * 0.6; 
         _0xbgm.currentTime = 0;
         _0xbgm.play().catch(e=>{});
     }
@@ -540,6 +540,7 @@
         const tutOverlay = document.getElementById('tutorial-overlay');
         if (tutOverlay) {
             tutOverlay.style.display = 'flex';
+            // 팁 모드에서는 ESC 가이드 등을 숨김
             const escGuide = document.getElementById('tut-esc-guide');
             if(escGuide) escGuide.style.display = 'none';
             _0xappTip();
@@ -550,7 +551,7 @@
         _0xplayClick();
         if (_0xcurrentTipType) {
             _0xtutorialStep++;
-            if (!_0xtextData.tips[_0xcurrentTipType] || _0xtutorialStep >= _0xtextData.tips[_0xcurrentTipType].length) {
+            if (_0xtutorialStep >= _0xtextData.tips[_0xcurrentTipType].length) {
                 document.getElementById('tutorial-overlay').style.display = 'none';
                 return;
             }
@@ -564,10 +565,10 @@
         const title = document.getElementById('tut-title');
         const desc = document.getElementById('tut-desc');
         const nextBtn = document.getElementById('tut-next-btn');
-        if (title && desc && _0xtextData && _0xtextData.tips[_0xcurrentTipType]) {
+        if (title && desc) {
             const tip = _0xtextData.tips[_0xcurrentTipType][_0xtutorialStep];
             title.innerText = tip.title;
-            desc.innerHTML = tip.desc.replace(/\n/g, "<br>");
+            desc.innerHTML = tip.desc.replace(/\n/g, "<br>"); 
             if(nextBtn) nextBtn.innerText = "확인";
         }
     }
@@ -589,42 +590,47 @@
         const turnCounter = document.getElementById('turn-counter');
         const chanceBox = document.getElementById('chance-box');
         
-        document.getElementById('game-box').classList.add('tutorial-dim');
-        document.getElementById('info-panel').classList.add('tutorial-dim');
+        const gb = document.getElementById('game-box');
+        const ip = document.getElementById('info-panel');
+        if(gb) gb.classList.add('tutorial-dim');
+        if(ip) ip.classList.add('tutorial-dim');
+
         document.querySelectorAll('.key-btn, #ent-btn, #clr-btn, #obs-btn, #display, #log-window, #candidates-box, #chance-area, #zero-btn, .log-item, #chance-box').forEach(el => el.classList.remove('tutorial-highlight'));
-        turnCounter.classList.remove('tutorial-highlight-turn');
-        nextBtn.classList.remove('btn-cyan');
+        if(turnCounter) turnCounter.classList.remove('tutorial-highlight-turn');
+        if(nextBtn) nextBtn.classList.remove('btn-cyan');
 
         const stepData = _0xtextData.tutorial.steps.find(s => s.step === _0xtutorialStep);
-        if (stepData) {
+        if (stepData && title && desc) {
             title.innerText = stepData.title;
             desc.innerHTML = stepData.desc;
         }
 
         if (_0xtutorialStep === 1) {
-            document.getElementById('game-box').classList.remove('tutorial-dim');
+            if(gb) gb.classList.remove('tutorial-dim');
             document.querySelectorAll('.key-btn, #zero-btn, #display').forEach(el => el.classList.add('tutorial-highlight'));
         } else if (_0xtutorialStep === 2) {
-            document.getElementById('game-box').classList.remove('tutorial-dim');
-            document.getElementById('ent-btn').classList.add('tutorial-highlight');
-            document.getElementById('clr-btn').classList.add('tutorial-highlight');
+            if(gb) gb.classList.remove('tutorial-dim');
+            document.getElementById('ent-btn')?.classList.add('tutorial-highlight');
+            document.getElementById('clr-btn')?.classList.add('tutorial-highlight');
         } else if (_0xtutorialStep === 3) {
-            document.getElementById('game-box').classList.remove('tutorial-dim');
+            if(gb) gb.classList.remove('tutorial-dim');
             const firstLog = document.querySelector('.log-item');
             if(firstLog) firstLog.classList.add('tutorial-highlight');
         } else if (_0xtutorialStep === 4) {
-            document.getElementById('info-panel').classList.remove('tutorial-dim');
-            document.getElementById('candidates-box').classList.add('tutorial-highlight');
+            if(ip) ip.classList.remove('tutorial-dim');
+            document.getElementById('candidates-box')?.classList.add('tutorial-highlight');
         } else if (_0xtutorialStep === 5) {
-            document.getElementById('info-panel').classList.remove('tutorial-dim');
-            chanceBox.classList.add('tutorial-highlight');
-            document.getElementById('game-box').classList.remove('tutorial-dim');
-            document.getElementById('obs-btn').classList.add('tutorial-highlight');
+            if(ip) ip.classList.remove('tutorial-dim');
+            if(chanceBox) chanceBox.classList.add('tutorial-highlight');
+            if(gb) gb.classList.remove('tutorial-dim');
+            document.getElementById('obs-btn')?.classList.add('tutorial-highlight');
         } else if (_0xtutorialStep === 6) {
-            document.getElementById('info-panel').classList.remove('tutorial-dim');
-            turnCounter.classList.add('tutorial-highlight-turn');
-            nextBtn.classList.add('btn-cyan');
-            nextBtn.innerText = _0xtextData.tutorial.button_finish;
+            if(ip) ip.classList.remove('tutorial-dim');
+            if(turnCounter) turnCounter.classList.add('tutorial-highlight-turn');
+            if(nextBtn) {
+                nextBtn.classList.add('btn-cyan');
+                nextBtn.innerText = _0xtextData.tutorial.button_finish;
+            }
         }
     }
 
@@ -633,27 +639,26 @@
             if (document.getElementById('credit-overlay')?.style.display === 'flex') { _0xclsCr(); return; }
             if (_0xisTutorial) location.reload();
             if (document.getElementById('obs-overlay')?.style.display === 'flex') { document.getElementById('obs-overlay').style.display = 'none'; }
+            if (document.getElementById('tutorial-overlay')?.style.display === 'flex') { document.getElementById('tutorial-overlay').style.display = 'none'; }
             return;
         }
         if (document.getElementById('obs-overlay')?.style.display === 'flex') {
             if (e.key === 'Enter') _0x6f5a(); return;
         }
-        
         if (e.key === 'Enter') {
             e.preventDefault();
-            if (document.getElementById('game-box').style.display === 'flex') {
+            const gb = document.getElementById('game-box');
+            if (gb && gb.style.display === 'flex') {
                 _0x7c3d('ENT');
             }
             return;
         }
-        
         if (e.key >= '0' && e.key <= '9') {
             const btn = document.querySelector(e.key === '0' ? '#zero-btn' : `.key-btn[data-key="${e.key}"]`);
             if(btn) { btn.classList.add('active'); setTimeout(() => btn.classList.remove('active'), 100); }
             _0x9b8a(e.key);
             return;
         }
-        
         if (e.key === 'Delete' || e.key === 'Backspace') {
             _0x7c3d('CLR');
             return;
@@ -664,14 +669,15 @@
         _0xplayClick(); 
         if(_0xinputStr.length < 4 && !_0xinputStr.includes(n)) { 
             _0xinputStr += n; 
-            document.getElementById('display').innerText = _0xinputStr; 
+            const disp = document.getElementById('display');
+            if(disp) disp.innerText = _0xinputStr; 
             if (_0xisTutorial && _0xtutorialStep === 1 && _0xinputStr.length === 4) {
                 setTimeout(() => { _0xtutorialStep = 2; document.getElementById('tutorial-overlay').style.display = 'flex'; _0xappTut(); }, 300);
             }
         } 
     }
 
-    function _0xclrIn(isSpecial) { if(!isSpecial) _0xplayClick(); _0xinputStr = ""; document.getElementById('display').innerText = "----"; }
+    function _0xclrIn(isSpecial) { if(!isSpecial) _0xplayClick(); _0xinputStr = ""; const disp = document.getElementById('display'); if(disp) disp.innerText = "----"; }
     
     function _0xentCli(isSpecial) {
         if(_0xinputStr.length === 4 && _0xturnCount > 0) {
@@ -713,9 +719,9 @@
         if(_0xpoisonInterval) return;
         const targetText = "Cat is Poisoned in the Box";
         const el = document.getElementById('chance-val');
+        if(!el) return;
         let index = targetText.length;
         let isDeleting = true;
-
         _0xpoisonInterval = setInterval(() => {
             if (isDeleting) {
                 el.innerHTML = `<span class="poison-text" style="color:var(--green); text-shadow: 0 0 1.5vh var(--green);">${targetText.substring(0, index)}</span>`;
@@ -731,6 +737,7 @@
 
     function _0xupUI() {
         const turnCounter = document.getElementById('turn-counter');
+        if(!turnCounter) return;
         turnCounter.innerText = _0xturnCount;
         const prob = _0xaiCandidates.length === 0 ? 0 : (1 / _0xaiCandidates.length * 100);
         const chanceValEl = document.getElementById('chance-val');
@@ -755,32 +762,30 @@
             if(!_0xzeroOverlayTriggered) {
                 _0xlightsOffSfx.currentTime = 0;
                 _0xlightsOffSfx.play().catch(e=>{});
-
-                flashOverlay.style.transition = 'none';
-                flashOverlay.style.background = '#000';
-                flashOverlay.style.opacity = '1';
-                
-                setTimeout(() => { 
-                    flashOverlay.style.transition = 'opacity 1.5s ease';
-                    flashOverlay.style.opacity = '0'; 
-                }, 3000);
-                
+                if(flashOverlay) {
+                    flashOverlay.style.transition = 'none';
+                    flashOverlay.style.background = '#000';
+                    flashOverlay.style.opacity = '1';
+                    setTimeout(() => { 
+                        flashOverlay.style.transition = 'opacity 1.5s ease';
+                        flashOverlay.style.opacity = '0'; 
+                    }, 3000);
+                }
                 if(paradoxOverlay) {
                     paradoxOverlay.style.display = 'block';
                     paradoxOverlay.style.opacity = '1';
                     paradoxOverlay.style.animation = "fadeOutLong 16s forwards";
                 }
-
                 _0xzeroOverlayTriggered = true;
                 _0xstPsL();
             }
-            chanceTitleEl.style.display = 'none';
-            chanceBoxEl.style.borderColor = 'var(--green)';
-            catImg.style.opacity = '0'; catImg.style.filter = 'blur(2vh)';
+            if(chanceTitleEl) chanceTitleEl.style.display = 'none';
+            if(chanceBoxEl) chanceBoxEl.style.borderColor = 'var(--green)';
+            if(catImg) { catImg.style.opacity = '0'; catImg.style.filter = 'blur(2vh)'; }
             turnCounter.style.color = 'var(--green)'; turnCounter.style.textShadow = '0 0 2vh var(--green)';
-            deadX.style.display = 'block'; 
+            if(deadX) deadX.style.display = 'block'; 
         } else {
-            deadX.style.display = 'none';
+            if(deadX) deadX.style.display = 'none';
             if(paradoxOverlay) { paradoxOverlay.style.display = 'none'; paradoxOverlay.style.animation = 'none'; }
             if(_0xpoisonInterval) { clearInterval(_0xpoisonInterval); _0xpoisonInterval = null; }
 
@@ -792,10 +797,12 @@
                 currentShadow = '0 0 2.5vh var(--red)';
                 if(!_0xalarmTriggered) {
                     _0xemergencySfx.play().catch(e=>{});
-                    flashOverlay.style.transition = 'opacity 1.5s ease';
-                    flashOverlay.style.background = 'radial-gradient(circle, rgba(255, 0, 0, 0) 70%, rgba(255, 0, 0, 0.4) 100%)';
-                    flashOverlay.style.opacity = '1';
-                    setTimeout(() => { flashOverlay.style.opacity = '0'; }, 1500);
+                    if(flashOverlay) {
+                        flashOverlay.style.transition = 'opacity 1.5s ease';
+                        flashOverlay.style.background = 'radial-gradient(circle, rgba(255, 0, 0, 0) 70%, rgba(255, 0, 0, 0.4) 100%)';
+                        flashOverlay.style.opacity = '1';
+                        setTimeout(() => { flashOverlay.style.opacity = '0'; }, 1500);
+                    }
                     _0xalarmTriggered = true;
                 }
             } else if (prob >= 10 && prob <= 51) {
@@ -806,61 +813,68 @@
                 _0xalarmTriggered = false;
             }
 
-            chanceValEl.style.color = currentColor;
-            chanceValEl.style.textShadow = currentShadow;
-            
-            chanceTitleEl.style.display = 'block';
-            chanceTitleEl.style.color = currentColor;
-            chanceTitleEl.style.textShadow = currentShadow;
-            
-            chanceValEl.innerText = prob.toFixed(2) + "%";
-            chanceBoxEl.style.borderColor = currentColor;
+            if(chanceValEl) {
+                chanceValEl.style.color = currentColor;
+                chanceValEl.style.textShadow = currentShadow;
+                chanceValEl.innerText = prob.toFixed(2) + "%";
+            }
+            if(chanceTitleEl) {
+                chanceTitleEl.style.display = 'block';
+                chanceTitleEl.style.color = currentColor;
+                chanceTitleEl.style.textShadow = currentShadow;
+            }
+            if(chanceBoxEl) chanceBoxEl.style.borderColor = currentColor;
             turnCounter.style.color = currentColor;
             const blurAmount = Math.max(0, (prob * 0.05));
             const opacityAmount = Math.max(0.1, 1 - (prob / 100));
-            catImg.style.display = 'block'; catImg.style.opacity = opacityAmount;
-            catImg.style.filter = `blur(${blurAmount}vh)`; 
-            catImg.style.borderColor = currentColor;
+            if(catImg) {
+                catImg.style.display = 'block'; catImg.style.opacity = opacityAmount;
+                catImg.style.filter = `blur(${blurAmount}vh)`; 
+                catImg.style.borderColor = currentColor;
+            }
         }
         
-        document.getElementById('log-window').innerHTML = _0xhistory.map(h => {
-            const resultText = (h.s === 0 && h.b === 0) ? `<span class="log-out">OUT</span>` : `${h.s}S / ${h.b}B`;
-            return `<div class="log-item"><span class="log-n">${h.n}</span><span class="log-sb">${resultText}</span></div>`;
-        }).join('');
-        document.getElementById('log-window').scrollTop = document.getElementById('log-window').scrollHeight;
+        const logWin = document.getElementById('log-window');
+        if(logWin) {
+            logWin.innerHTML = _0xhistory.map(h => {
+                const resultText = (h.s === 0 && h.b === 0) ? `<span class="log-out">OUT</span>` : `${h.s}S / ${h.b}B`;
+                return `<div class="log-item"><span class="log-n">${h.n}</span><span class="log-sb">${resultText}</span></div>`;
+            }).join('');
+            logWin.scrollTop = logWin.scrollHeight;
+        }
 
         const slice = [..._0xaiCandidates].sort(() => 0.5 - Math.random()).slice(0, 100);
-        
         let pixelateStrength = 0;
-        if (prob >= 25) {
-            pixelateStrength = 0; 
-        } else if (prob >= 5) {
-            pixelateStrength = 0.05; 
-        } else if (prob >= 1) {
-            pixelateStrength = 0.15; 
-        } else {
-            pixelateStrength = 0.25; 
-        }
+        if (prob >= 25) pixelateStrength = 0; 
+        else if (prob >= 5) pixelateStrength = 0.05; 
+        else if (prob >= 1) pixelateStrength = 0.15; 
+        else pixelateStrength = 0.25; 
 
-        document.getElementById('cand-list').innerHTML = slice.map(c => `<div class="cand-item" style="filter: blur(${pixelateStrength}vh) contrast(180%);">${c}</div>`).join('');
+        const candList = document.getElementById('cand-list');
+        if(candList) {
+            candList.innerHTML = slice.map(c => `<div class="cand-item" style="filter: blur(${pixelateStrength}vh) contrast(180%);">${c}</div>`).join('');
+        }
 
         const statusEl = document.getElementById('status');
         const entBtn = document.getElementById('ent-btn');
-        if(_0xturnCount <= 0) {
-            entBtn.disabled = true;
-            statusEl.innerText = "측정 완료 (관측만 가능)";
-            statusEl.style.animation = "none";
-            statusEl.style.color = "var(--red)";
-            statusEl.style.textShadow = "0 0 1vh var(--red)";
-        } else {
-            entBtn.disabled = false;
-            statusEl.innerText = "양자고양이 위치 관측 중...";
-            statusEl.style.animation = "neonShift 10s infinite alternate linear";
+        if(statusEl) {
+            if(_0xturnCount <= 0) {
+                if(entBtn) entBtn.disabled = true;
+                statusEl.innerText = "측정 완료 (관측만 가능)";
+                statusEl.style.animation = "none";
+                statusEl.style.color = "var(--red)";
+                statusEl.style.textShadow = "0 0 1vh var(--red)";
+            } else {
+                if(entBtn) entBtn.disabled = false;
+                statusEl.innerText = "양자고양이 위치 관측 중...";
+                statusEl.style.animation = "neonShift 10s infinite alternate linear";
+            }
         }
     }
 
     function _0xrndPrCl() {
         const field = document.getElementById('quantum-field');
+        if(!field) return;
         field.innerHTML = "";
         const neons = ['var(--cyan)', 'var(--purple)', 'var(--green)', 'var(--red)'];
         const list = _0xaiCandidates.length > 0 ? _0xaiCandidates : ["ERROR", "VOID", "0000"];
@@ -894,18 +908,22 @@
                     clearInterval(_0xmeowLoopInterval);
                 }
             }, 6000);
-
             const ed = _0xtextData.endings.paradox;
             _0xrnEG(ed.type, ed.result, ed.message, 'var(--green)', true, true);
             return;
         }
         _0xrndPrCl();
-        document.getElementById('obs-overlay').style.display = 'flex';
-        setTimeout(() => { const obsInput = document.getElementById('obs-num'); if(obsInput){ obsInput.value = ""; obsInput.focus(); } }, 10);
+        const obsOv = document.getElementById('obs-overlay');
+        if(obsOv) {
+            obsOv.style.display = 'flex';
+            setTimeout(() => { const obsInput = document.getElementById('obs-num'); if(obsInput){ obsInput.value = ""; obsInput.focus(); } }, 10);
+        }
     }
 
     function _0x6f5a() {
-        const guess = document.getElementById('obs-num').value;
+        const obsNumEl = document.getElementById('obs-num');
+        if(!obsNumEl) return;
+        const guess = obsNumEl.value;
         if(guess.length === 4) {
             _0xplayClick();
             let realSecret = _0xaiCandidates[Math.floor(Math.random() * _0xaiCandidates.length)];
@@ -916,7 +934,6 @@
                     _0xsuccessSfx.currentTime = 0;
                     _0xsuccessSfx.play().catch(e=>{});
                 }, 6000);
-                
                 const ed = _0xtextData.endings.win;
                 _0xrnEG(ed.type, ed.result, ed.message, 'var(--cyan)', true, false);
             } else {
@@ -926,7 +943,6 @@
                     _0xfailSfx.currentTime = 0;
                     _0xfailSfx.play().catch(e=>{});
                 }, 6000);
-                
                 const ed = _0xtextData.endings.lose;
                 _0xrnEG(ed.type, ed.result, ed.message, 'var(--red)', false, false);
             }
@@ -997,9 +1013,8 @@
                 ${subButtons}
             </div>`;
             
-        document.getElementById('volume-slider-end').addEventListener('input', (e) => {
-            _0x3f2a(e.target.value);
-        });
+        const volEnd = document.getElementById('volume-slider-end');
+        if(volEnd) volEnd.addEventListener('input', (e) => { _0x3f2a(e.target.value); });
     }
 
     let _0xcrdScrInt = null;
@@ -1011,9 +1026,7 @@
         const overlay = document.getElementById('credit-overlay');
         const content = document.getElementById('credit-content');
         if (!overlay || !content) return;
-        
         const text = _0xtextData.dev_story.join("\n");
-        
         content.innerHTML = `
             <div>${text}</div>
             <img src="귀여운고양이.jpg" onclick="_0xplayNyaBgm()" style="width:67.5vh; height:auto; margin-top:5vh; border-radius:2vh; border:0.4vh solid var(--green); box-shadow: 0 0 2vh var(--green); cursor:pointer;">
@@ -1022,7 +1035,6 @@
         overlay.style.display = 'flex';
         _0xcrdY = window.innerHeight * 0.1;
         _0xcrdSpd = 0.55;
-        
         if (_0xcrdScrInt) clearInterval(_0xcrdScrInt);
         _0xcrdScrInt = setInterval(() => {
             _0xcrdY -= _0xcrdSpd;
