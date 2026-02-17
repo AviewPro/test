@@ -391,11 +391,100 @@
 </div>
 
 <script>
-    let _0xtextData = null;
-    fetch('textdata.json')
-        .then(response => response.json())
-        .then(data => { _0xtextData = data; })
-        .catch(error => console.error('Error loading textdata:', error));
+    // JSON 데이터를 코드 내부로 삽입하여 Tips 버튼 반응 문제 해결
+    const _0xtextData = {
+        "dev_story": [],
+        "endings": {
+            "paradox": {
+                "type": "Training Complete",
+                "result": "양자고양이 추적자",
+                "message": "축하합니다! 당신은 양자고양이 추적시험을 통과했습니다.<br> 슈뢰딩거의 고양이를 찾기위해 더 어려운 난이도에 도전하시겠습니까? <br>당신의 고양이에 대한 사랑을 증명해보세요!"
+            },
+            "win": {
+                "type": "Quantum Collapse",
+                "result": "승리",
+                "message": "관측 성공! 당신의 고양이는 살아있었습니다<br>당신은 고양이의 위치만을 알 수 있었습니다"
+            },
+            "lose": {
+                "type": "Quantum Collapse",
+                "result": "패배",
+                "message": "관측 실패! 당신의 고양이는 사라졌습니다<br>당신은 고양이의 운동량만을 알 수 있었습니다"
+            }
+        },
+        "tips": {
+            "fail": [
+                {
+                    "title": "실패 시 참고팁 (1/3)",
+                    "desc": "이 게임의 처음, 두번째에 가장 무난한 선택지는 123, 456이 아닐지도 모릅니다.<br>조금 다른방식으로 접근을 해보는건 어떨까요?"
+                },
+                {
+                    "title": "실패 시 참고팁 (2/3)",
+                    "desc": "그리고 고양이의 알고리즘 첫번째는 계속 1Ball 판정이 고정입니다.<br>처음 판정받은 숫자들을 돌려가며 다른식으로 배치해보세요<br>그렇게 하면 3~4턴 사이에는 금새 가능성이 좁혀지게 됩니다."
+                },
+                {
+                    "title": "실패 시 참고팁 (3/3)",
+                    "desc": "어느정도 좌표가 특정된 후 양자구름에 표시된 숫자를 보고 측정을 하면<br>양자고양이를 관측할 수 있을겁니다. 화이팅!"
+                }
+            ],
+            "success": [
+                {
+                    "title": "성공 시 참고팁 (1/5)",
+                    "desc": "눈치를 못채셨을 수도 있지만 이 게임은 관측에 성공을 하든 실패를 하든<br><span style='color:var(--cyan); font-weight:bold;'>Quantum Collapse(양자 붕괴)</span>엔딩이 나오게 설계되었습니다. <br>그렇게 한 것은 관측 성공도 이 게임의 진짜 목표가 아니기 때문입니다."
+                },
+                {
+                    "title": "성공 시 참고팁 (2/5)",
+                    "desc": "단순히 관측 성공을 하는거 자체는 너무 난이도가 낮으니까요. <br><span style='color:var(--cyan); font-weight:bold;'>이 게임은 정확히 5턴의 좌표확인으로 100%로 양자고양이의 좌표를 특정하고 <br>6턴째 좌표입력까지 진행해서 모순을 찾고 양자고양이를 잡는 게임입니다.</span>"
+                },
+                {
+                    "title": "성공 시 참고팁 (3/5)",
+                    "desc": "양자고양이는 계속해서 최대한 안전해보이는 좌표로 도망칩니다. <br>정확히는 가능한 후보 숫자가 가장 많은 볼카운트 대답한다는 의미죠."
+                },
+                {
+                    "title": "성공 시 참고팁 (4/5)",
+                    "desc": "고정된 알고리즘이기 때문에 똑같은 질문을 100번 하면 100번 똑같이 답합니다.<br> 일정한 빌드를 만들어서 가장 높은 확률을 따라가면 최적화되는 구조입니다. <br>측정 숫자를 교차로 배치해서 몰이사냥을 하듯이 숨을 곳을 좁히세요."
+                },
+                {
+                    "title": "성공 시 참고팁 (5/5)",
+                    "desc": "당신은 고양이 추적자 역량을 기르기 위해 <span style='color:var(--green); font-weight:bold;'>진심으로 도전</span>을 해보겠다는 건가요?<br> 그런분은 정말 환영입니다. "
+                }
+            ]
+        },
+        "tutorial": {
+            "steps": [
+                {
+                    "step": 1,
+                    "title": "1. 숫자 입력",
+                    "desc": "입력 패널의 버튼을 눌러서 입력하거나 키보드 숫자키를 활용해<br>임의의 3자리 수를 입력해보세요."
+                },
+                {
+                    "step": 2,
+                    "title": "2. 양자고양이 좌표 측정",
+                    "desc": "입력 패널의 엔터키나 키보드 Enter를 통해서 양자 고양이의 좌표를 측정하세요.<br>고양이가 숨어있는 3자리 좌표를 찾으면 됩니다."
+                },
+                {
+                    "step": 3,
+                    "title": "3. 결과 표시 판넬",
+                    "desc": "S는 숫자와 위치가 모두 맞는 숫자의 개수이며<br>B는 숫자는 맞지만 위치는 틀린 숫자의 개수입니다."
+                },
+                {
+                    "step": 4,
+                    "title": "4. 양자 구름의 의미",
+                    "desc": "좌표 측정을 진행하다 보면 양자고양이가 위치할 가능성이 있는 좌표들이<br>점차 선명히 보이기 시작합니다."
+                },
+                {
+                    "step": 5,
+                    "title": "5. 관측 확률",
+                    "desc": "지금까지 판정결과에 부합하는 임의의 숫자로 관측했을 때 찾을 확률입니다.<br>관측은 입력패널의 우상단 보라색 버튼을 통해 진행합니다."
+                },
+                {
+                    "step": 6,
+                    "title": "6. 횟수 제한 및 엔딩",
+                    "desc": "양자고양이는 언제나 가장 잘 숨을 수 있는 좌표로 도망칩니다.<br><span style='color:var(--red); font-weight:bold;'>6턴의 좌표 측정만으로 고양이의 좌표를 찾아보세요!</span>"
+                }
+            ],
+            "button_finish": "게임하러 가기"
+        }
+    };
 
     const firebaseConfig = { apiKey: "AIzaSyCvxUeqc28cRZ8RL4jpAwtakMxRo5d6zbU", authDomain: "aviewpro.firebaseapp.com", databaseURL: "https://aviewpro-default-rtdb.asia-southeast1.firebasedatabase.app", projectId: "aviewpro", storageBucket: "aviewpro.firebasestorage.app", messagingSenderId: "592622610945", appId: "1:592622610945:web:7d56b09e966a4faac62e00", measurementId: "G-NZQ5ZFXG2F" };
 
@@ -523,7 +612,6 @@
     }
 
     function _0x1d2e() {
-        if(!_0xtextData) return;
         _0xisTutorial = true; _0xcurrentTipType = ""; _0xtutorialStep = 1;
         _0x4c5b();
         document.getElementById('obs-btn').disabled = true;
@@ -532,7 +620,6 @@
     }
 
     window.showTips = function(type) {
-        if(!_0xtextData) return;
         _0xplayClick();
         _0xisTutorial = false;
         _0xcurrentTipType = type;
@@ -540,7 +627,6 @@
         const tutOverlay = document.getElementById('tutorial-overlay');
         if (tutOverlay) {
             tutOverlay.style.display = 'flex';
-            // 팁 모드에서는 ESC 가이드 등을 숨김
             const escGuide = document.getElementById('tut-esc-guide');
             if(escGuide) escGuide.style.display = 'none';
             _0xappTip();
@@ -568,7 +654,7 @@
         if (title && desc) {
             const tip = _0xtextData.tips[_0xcurrentTipType][_0xtutorialStep];
             title.innerText = tip.title;
-            desc.innerHTML = tip.desc.replace(/\n/g, "<br>"); 
+            desc.innerHTML = tip.desc; 
             if(nextBtn) nextBtn.innerText = "확인";
         }
     }
@@ -892,7 +978,7 @@
     }
 
     function _0x2f1e() {
-        if(_0xisTutorial || !_0xtextData) return;
+        if(_0xisTutorial) return;
         _0xplaySpecialClick();
         if(_0xaiCandidates.length === 0) {
             _0xmeowCount = 0; 
@@ -1022,7 +1108,6 @@
     let _0xcrdSpd = 0.55;
 
     window.showCredits = function() {
-        if(!_0xtextData) return;
         const overlay = document.getElementById('credit-overlay');
         const content = document.getElementById('credit-content');
         if (!overlay || !content) return;
