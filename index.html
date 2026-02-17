@@ -51,7 +51,7 @@
         .title-wrapper { position: relative; margin-top: 5vh; margin-bottom: 3vh; z-index: 300; display: flex; flex-direction: column; justify-content: center; align-items: center; flex-shrink: 0; }
         .title-bg { position: absolute; background: rgba(0, 0, 0, 0.7); width: 120%; height: 120%; border-radius: 1.5vh; filter: blur(0.5vh); z-index: -1; }
         .header-title { font-size: 5vh; font-weight: bold; letter-spacing: 1.2vh; text-shadow: 0 0 2vh currentColor; animation: neonShift 10s infinite alternate linear; text-align: center; margin: 0; padding: 1vh 4vh 0.5vh 4vh; }
-        .header-subtitle { font-family: 'Orbitron', sans-serif; font-size: 1.8vh; color: var(--cyan); letter-spacing: 0.5vh; opacity: 0.8; margin-bottom: 1vh; }
+        .header-subtitle { font-family: 'Orbitron', sans-serif; font-size: 1.8vh; color: var(--cyan); letter-spacing: 0.5vh; opacity: 0.8; margin-top: 0.5vh; margin-bottom: 1.5vh; }
         
         @keyframes neonShift { 0% { color: var(--cyan); border-color: var(--cyan); box-shadow: 0 0 2vh var(--cyan); } 100% { color: var(--purple); border-color: var(--purple); box-shadow: 0 0 2vh var(--purple); } }
         @keyframes neonShiftBg { 0% { background-color: var(--cyan); box-shadow: 0 0 1.5vh var(--cyan); } 100% { background-color: var(--purple); box-shadow: 0 0 1.5vh var(--purple); } }
@@ -98,7 +98,8 @@
         .log-sb { font-weight: bold; font-size: 1.8vh; color: var(--purple); margin-top: 0.2vh; }
         .log-out { color: #bc13fe; text-shadow: 0 0 1vh #bc13fe; }
         
-        .training-clear-msg { grid-column: span 2; display: flex; align-items: center; justify-content: center; height: 100%; color: var(--green); font-size: 2.2vh; font-weight: bold; text-align: center; text-shadow: 0 0 1vh var(--green); line-height: 1.4; animation: blinkSync 2s infinite ease-in-out; }
+        .training-clear-msg { grid-column: span 2; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; color: var(--green); font-size: 2.2vh; font-weight: bold; text-align: center; text-shadow: 0 0 1vh var(--green); line-height: 1.6; }
+        .count-highlight { font-size: 4vh; margin-bottom: 0.5vh; display: block; }
 
         .chance-area { display: flex; align-items: center; justify-content: space-between; margin-bottom: 2.5vh; gap: 2vh; height: 16vh; position: relative; }
         #chance-box { background: rgba(0,0,0,0.6); padding: 1vh; border-radius: 2vh; border: 0.2vh solid var(--purple); text-align: center; flex: 1; height: 100%; display: flex; flex-direction: column; justify-content: center; box-sizing: border-box; transition: border-color 0.5s; z-index: 5; }
@@ -765,13 +766,16 @@
                 _0xlightsOffSfx.currentTime = 0;
                 _0xlightsOffSfx.play().catch(e=>{});
 
+                // 암전 효과 로직 수정: 확실한 초기화 후 애니메이션
+                flashOverlay.style.display = 'block';
                 flashOverlay.style.transition = 'none';
                 flashOverlay.style.background = '#000';
-                flashOverlay.opacity = '1';
+                flashOverlay.style.opacity = '1';
                 
                 setTimeout(() => { 
-                    flashOverlay.style.transition = 'opacity 1.5s ease';
+                    flashOverlay.style.transition = 'opacity 1.5s ease-in-out';
                     flashOverlay.style.opacity = '0'; 
+                    setTimeout(() => { flashOverlay.style.display = 'none'; }, 1500);
                 }, 3000);
                 
                 if(paradoxOverlay) {
@@ -789,8 +793,12 @@
             turnCounter.style.color = 'var(--green)'; turnCounter.style.textShadow = '0 0 2vh var(--green)';
             deadX.style.display = 'block'; 
             
-            // 왼쪽 패널 다 지우고 훈련 통과 메시지 표시
-            logWindow.innerHTML = `<div class="training-clear-msg">${_0xplayCount}회만에 훈련을 통과하셨습니다</div>`;
+            // 왼쪽 패널에 훈련 통과 메시지 고정 및 폰트 크기 조정
+            logWindow.innerHTML = `
+                <div class="training-clear-msg">
+                    <span class="count-highlight">${_0xplayCount}회 만에</span>
+                    훈련을 통과하셨습니다
+                </div>`;
         } else {
             deadX.style.display = 'none';
             if(paradoxOverlay) { paradoxOverlay.style.display = 'none'; paradoxOverlay.style.animation = 'none'; }
@@ -804,10 +812,11 @@
                 currentShadow = '0 0 2.5vh var(--red)';
                 if(!_0xalarmTriggered) {
                     _0xemergencySfx.play().catch(e=>{});
+                    flashOverlay.style.display = 'block';
                     flashOverlay.style.transition = 'opacity 1.5s ease';
                     flashOverlay.style.background = 'radial-gradient(circle, rgba(255, 0, 0, 0) 70%, rgba(255, 0, 0, 0.4) 100%)';
                     flashOverlay.style.opacity = '1';
-                    setTimeout(() => { flashOverlay.style.opacity = '0'; }, 1500);
+                    setTimeout(() => { flashOverlay.style.opacity = '0'; setTimeout(() => { flashOverlay.style.display = 'none'; }, 1500); }, 1500);
                     _0xalarmTriggered = true;
                 }
             } else if (prob >= 10 && prob <= 51) {
