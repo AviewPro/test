@@ -278,16 +278,14 @@
         @keyframes slide-h { from { transform: translateX(-150%); } to { transform: translateX(150vw); } }
         @keyframes slide-v { from { transform: translateY(150vh); } to { transform: translateY(-150%); } }
 
-        /* 모바일 대응 미디어 쿼리 - 제목 크기 및 레이아웃 강제 조정 */
+        /* 모바일 세로 환경 (너비 768px 이하) 대응 */
         @media screen and (max-width: 768px) {
-            .title-wrapper { margin-top: 2vh !important; margin-bottom: 2vh !important; width: 90vw !important; overflow: hidden; }
-            .header-title { font-size: 2.5vh !important; letter-spacing: 0.4vh !important; padding: 1vh 2vh !important; }
-            .header-subtitle { font-size: 1.2vh !important; letter-spacing: 0.2vh !important; margin-bottom: 0.5vh !important; }
-            .title-bg { width: 100% !important; height: 100% !important; }
+            /* 제목 표시 상자 자체를 아예 안보이게 처리 */
+            .title-wrapper { display: none !important; }
 
             #version-tag, #setup-footer { display: none !important; }
             
-            #setup { width: 90vw; margin-top: 1vh; }
+            #setup { width: 90vw; margin-top: 5vh; padding: 2vh; }
             #game-box, #info-panel { 
                 width: 95vw; 
                 height: 48vh; 
@@ -296,7 +294,8 @@
                 padding: 1.5vh;
             }
             .game-container { padding-top: 0vh; padding-bottom: 2vh; width: 100%; }
-            .setup-cat, .setup-btn, .tutorial-btn, .setup-box-container { width: 80vw; }
+            .setup-cat, .setup-btn, .tutorial-btn, .setup-box-container { width: 75vw; height: auto; }
+            .setup-cat { height: 75vw; }
             .panel-center { width: 90vw; padding: 3vh; }
             
             .game-container > div[style*="flex-wrap: wrap"] {
@@ -841,7 +840,7 @@
                 currentShadow = '0 0 2.5vh var(--cyan)';
                 _0xalarmTriggered = false;
             } else {
-                _0alarmTriggered = false;
+                _0xalarmTriggered = false;
             }
 
             chanceValEl.style.color = currentColor;
@@ -893,7 +892,7 @@
             statusEl.style.textShadow = "0 0 1vh var(--red)";
         } else {
             entBtn.disabled = false;
-            statusEl.innerText = "양자고양이 위치 관측 중...";
+            statusEl.innerText = "고양이 위치 관측 중...";
             statusEl.style.animation = "neonShift 10s infinite alternate linear";
         }
     }
