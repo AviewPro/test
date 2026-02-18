@@ -46,6 +46,34 @@
             letter-spacing: 0.1vh;
             z-index: 500;
         }
+
+        /* 튜토리얼 카운터 스타일 추가 */
+        #tutorial-counter-display {
+            position: fixed;
+            right: 5vh;
+            top: 15vh;
+            text-align: center;
+            z-index: 1000;
+            font-family: 'Orbitron', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .tut-count-label {
+            font-size: 2vh;
+            color: var(--cyan);
+            letter-spacing: 0.2vh;
+            margin-bottom: 0.5vh;
+            text-shadow: 0 0 1vh var(--cyan);
+        }
+        .tut-count-number {
+            font-size: 12vh;
+            font-weight: 900;
+            color: #fff;
+            line-height: 1;
+            text-shadow: 0 0 3vh var(--cyan);
+            animation: neonShift 10s infinite alternate linear;
+        }
         
         #sound-control { position: fixed; right: 2vh; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; align-items: center; gap: 1vh; background: rgba(0,0,0,0.7); padding: 1.5vh 1vh; border-radius: 3vh; border: 0.1vh solid var(--cyan); z-index: 10000; }
         #sound-control input[type=range] { -webkit-appearance: slider-vertical; width: 0.8vh; height: 15vh; cursor: pointer; }
@@ -307,7 +335,6 @@
             opacity: 0.9;
         }
 
-        /* Responsive Query (Updated for 1000px and Layout fixes) */
         @media screen and (max-width: 1000px) {
             .title-wrapper { display: none !important; }
             #setup { width: 90vw; }
@@ -322,6 +349,7 @@
             }
             .setup-cat, .setup-btn, .tutorial-btn, .setup-box-container { width: 80vw; }
             .panel-center { width: 90vw; padding: 3vh; }
+            #tutorial-counter-display { display: none; } /* 모바일에서는 숨김 */
             
             .game-container > div[style*="flex-wrap: wrap"] {
                 flex-direction: column !important;
@@ -335,6 +363,11 @@
 
 <div id="version-tag">0.7 Version</div>
 <div id="flash-overlay"></div>
+
+<div id="tutorial-counter-display">
+    <div class="tut-count-label">TUTORIAL COUNTER</div>
+    <div id="tut-count-num" class="tut-count-number">0</div>
+</div>
 
 <div id="sound-control">
     <span class="sound-icon">♪</span>
@@ -448,7 +481,6 @@
     let _0vMCnt = 0; 
     let _0vPCnt = 0;
     
-    // NEW: Tutorial counter logic
     let _0vTutCount = 0;
 
     let _0vBgm = new Audio("002. ErikMMusic - The Dusty Attic.mp3");
@@ -519,7 +551,6 @@
             _0vClrIn(true);
         }
         if(type === 'ENT') {
-            // Check if turns remaining
             if(_0vTC <= 0) return;
             _0vSimB('ent-btn');
             _0vPlayS();
@@ -528,7 +559,7 @@
     }
 
     function _0vStart() {
-        if(_0vTutCount === 0) return; // Guard
+        if(_0vTutCount === 0) return;
         _0vPlayC();
         _0vPCnt++;
         if(_0vFInt) { clearInterval(_0vFInt); _0vFInt = null; }
@@ -538,6 +569,9 @@
         document.getElementById('setup-footer').style.display = 'none';
         document.getElementById('game-box').style.display = 'flex';
         document.getElementById('info-panel').style.display = 'flex';
+        // 게임 시작 시 카운터 디스플레이 숨김
+        const counterDisp = document.getElementById('tutorial-counter-display');
+        if(counterDisp) counterDisp.style.display = 'none';
         _0vResGm();
     }
 
@@ -577,7 +611,10 @@
     function _0vHTP() {
         if(!_0vTData) return;
         _0vTutCount++;
-        // Update Start button state
+        // 카운터 디스플레이 업데이트
+        const tutNumEl = document.getElementById('tut-count-num');
+        if(tutNumEl) tutNumEl.innerText = _0vTutCount;
+
         const startBtn = document.getElementById('game-start-btn');
         const tutBtn = document.getElementById('tut-start-btn');
         if(_0vTutCount > 0) {
@@ -586,13 +623,15 @@
         }
 
         _0vIsTut = true; _0vTType = ""; _0vTStep = 1;
-        // Temporary start to show tutorial in game screen context
         document.getElementById('setup').style.display = 'none';
         document.getElementById('setup-footer').style.display = 'none';
         document.getElementById('game-box').style.display = 'flex';
         document.getElementById('info-panel').style.display = 'flex';
-        _0vResGm();
+        
+        const counterDisp = document.getElementById('tutorial-counter-display');
+        if(counterDisp) counterDisp.style.display = 'none';
 
+        _0vResGm();
         document.getElementById('obs-btn').disabled = true;
         document.getElementById('tutorial-overlay').style.display = 'flex';
         _0vAppTut();
@@ -710,7 +749,6 @@
             if (e.key === 'Enter') _0vDoObs(); return;
         }
         if (e.key === '-' || e.key === '_') {
-            // OBS Shortcut check
             if (document.getElementById('game-box').style.display === 'flex') {
                 const obsBtn = document.getElementById('obs-btn');
                 if(!obsBtn.disabled) _0vOBS();
@@ -720,7 +758,6 @@
         if (e.key === 'Enter') {
             e.preventDefault();
             if (document.getElementById('game-box').style.display === 'flex') {
-                // Turn counter check for Enter key
                 if(_0vTC > 0) {
                     _0vCmd('ENT');
                 }
@@ -822,8 +859,6 @@
         const logWindow = document.getElementById('log-window');
         const obsBtn = document.getElementById('obs-btn');
         
-        // OBS Button Lock logic: Disable until more than 4 turns processed (meaning turn count < 3 since start is 6)
-        // Adjust logic based on initial turns (6). If turns played < 4, disable.
         const turnsPlayed = 6 - _0vTC;
         if(turnsPlayed < 4 && !_0vIsTut) {
             obsBtn.disabled = true;
@@ -970,7 +1005,6 @@
 
     function _0vOBS() {
         if(_0vIsTut || !_0vTData || document.getElementById('game-box').style.display !== 'flex') return;
-        // Turn check within function as well
         if((6 - _0vTC) < 4) return;
 
         _0vPlayS();
