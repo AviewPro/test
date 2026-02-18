@@ -305,15 +305,16 @@
         }
 
         @media screen and (max-width: 768px) {
-            #setup { width: 90vw; max-width: 50vh; }
+            .title-wrapper { display: none !important; }
+            #setup { width: 90vw; }
             #game-box, #info-panel { 
-                width: 90vw; 
-                max-width: 50vh;
+                width: 90vw !important;
+                max-width: 90vw !important;
                 height: auto; 
                 min-height: 80vh; 
                 flex-shrink: 0;
             }
-            .setup-cat, .setup-btn, .tutorial-btn, .setup-box-container { width: 80vw; max-width: 40vh; }
+            .setup-cat, .setup-btn, .tutorial-btn, .setup-box-container { width: 80vw; }
             .header-title { font-size: 4vh; letter-spacing: 0.5vh; }
             .panel-center { width: 90vw; padding: 3vh; }
             
