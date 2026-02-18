@@ -90,12 +90,16 @@
         .setup-cat { width: 35vh; height: 35vh; border-radius: 4vh; border: 0.4vh solid var(--green); object-fit: cover; animation: neonShift 10s infinite alternate linear; display: block; }
         
         .setup-btn { font-family: 'Bebas Neue', cursive; width: 35vh; color: #000; font-weight: 900; height: 7vh; font-size: 3.2vh; border-radius: 1.5vh; cursor: pointer; border: none; animation: neonShiftBg 10s infinite alternate linear; margin-top: 1vh; transition: transform 0.1s, filter 0.2s; letter-spacing: 0.1vh; }
-        .setup-btn:hover { transform: scale(1.02); filter: brightness(1.2); }
-        .setup-btn:active { transform: scale(0.98); }
+        .setup-btn:hover:not(:disabled) { transform: scale(1.02); filter: brightness(1.2); }
+        .setup-btn:active:not(:disabled) { transform: scale(0.98); }
+        .setup-btn:disabled { opacity: 0.3; cursor: not-allowed; animation: none; background: #333; color: #666; }
 
         .tutorial-btn { font-family: 'Bebas Neue', cursive; width: 35vh; background: #444; color: #fff; font-weight: 700; height: 5vh; font-size: 2.5vh; border-radius: 1.5vh; cursor: pointer; border: 0.2vh solid #666; margin-bottom: 1vh; transition: 0.2s; letter-spacing: 0.1vh; }
         .tutorial-btn:hover { background: #555; transform: scale(1.02); }
         .tutorial-btn:active { transform: scale(0.98); }
+        .tutorial-btn.force-highlight { border: 0.4vh solid var(--red); box-shadow: 0 0 2vh var(--red); animation: pulseRed 1s infinite alternate; }
+
+        @keyframes pulseRed { from { opacity: 0.8; } to { opacity: 1; box-shadow: 0 0 3vh var(--red); } }
 
         .new-keyhole { width: 35vh; height: auto; margin-top: 1.5vh; animation: keyholeNeonShift 10s infinite alternate linear; }
 
@@ -304,28 +308,36 @@
             opacity: 0.9;
         }
 
-        @media screen and (max-width: 768px) {
-            #setup { width: 90vw; }
+        @media screen and (max-width: 1000px) {
+            .title-wrapper { display: none !important; }
             #game-box, #info-panel { 
-                width: 90vw; 
-                height: auto; 
-                min-height: 80vh; 
+                width: 100vw !important; 
+                height: 75vh !important; 
                 flex-shrink: 0;
+                border-left: none;
+                border-right: none;
+                border-radius: 0;
             }
-            .setup-cat, .setup-btn, .tutorial-btn, .setup-box-container { width: 80vw; }
+            .game-container { width: 100%; padding: 0; }
             .header-title { font-size: 4vh; letter-spacing: 0.5vh; }
             .panel-center { width: 90vw; padding: 3vh; }
             
             .game-container > div[style*="flex-wrap: wrap"] {
                 flex-direction: column !important;
                 align-items: center !important;
+                gap: 0 !important;
             }
+        }
+
+        @media screen and (max-width: 768px) {
+            #setup { width: 90vw; }
+            .setup-cat, .setup-btn, .tutorial-btn, .setup-box-container { width: 80vw; }
         }
     </style>
 </head>
 <body oncontextmenu="return false" oncopy="return false" oncut="return false">
 
-<div id="version-tag">0.6 Version</div>
+<div id="version-tag">0.7 Version</div>
 <div id="flash-overlay"></div>
 
 <div id="sound-control">
@@ -363,8 +375,8 @@
         <div class="setup-box-container">
             <img src="귀여운고양이도트4.jpg" class="setup-cat">
         </div>
-        <button onclick="_0vHTP()" class="tutorial-btn">How to Play</button>
-        <button onclick="_0vStart()" class="setup-btn">Start Single Mode</button>
+        <button id="start-tutorial-btn" onclick="_0vHTP()" class="tutorial-btn force-highlight">How to Play</button>
+        <button id="start-game-btn" onclick="_0vStart()" class="setup-btn" disabled>Start Single Mode</button>
         <img src="Aview.png" class="new-keyhole">
     </div>
     <div id="setup-footer">
@@ -439,6 +451,7 @@
     let _0vMInt = null; 
     let _0vMCnt = 0; 
     let _0vPCnt = 0;
+    let _0vTutCnt = 0; // 튜토리얼 클릭 카운터
     
     let _0vBgm = new Audio("002. ErikMMusic - The Dusty Attic.mp3");
     _0vBgm.loop = true;
@@ -515,6 +528,7 @@
     }
 
     function _0vStart() {
+        if(_0vTutCnt === 0) return; // 튜토리얼 미진행 시 시작 불가
         _0vPlayC();
         _0vPCnt++;
         if(_0vFInt) { clearInterval(_0vFInt); _0vFInt = null; }
@@ -553,8 +567,10 @@
         }
         
         const oldPlayCount = _0vPCnt;
+        const oldTutCnt = _0vTutCnt;
         document.body.innerHTML = _0vBodyOri;
         _0vPCnt = oldPlayCount;
+        _0vTutCnt = oldTutCnt;
         
         _0vVol(document.getElementById('volume-slider')?.value || 0.15);
         _0vStart();
@@ -562,8 +578,26 @@
 
     function _0vHTP() {
         if(!_0vTData) return;
+        _0vTutCnt++; // 튜토리얼 클릭 시 카운트 증가
+        
+        // 버튼 활성화 로직
+        const startBtn = document.getElementById('start-game-btn');
+        const tutBtn = document.getElementById('start-tutorial-btn');
+        if(_0vTutCnt > 0) {
+            startBtn.disabled = false;
+            tutBtn.classList.remove('force-highlight');
+        }
+
         _0vIsTut = true; _0vTType = ""; _0vTStep = 1;
-        _0vStart();
+        _0vStartTutorialView();
+    }
+
+    function _0vStartTutorialView() {
+        document.getElementById('setup').style.display = 'none';
+        document.getElementById('setup-footer').style.display = 'none';
+        document.getElementById('game-box').style.display = 'flex';
+        document.getElementById('info-panel').style.display = 'flex';
+        _0vResGm();
         document.getElementById('obs-btn').disabled = true;
         document.getElementById('tutorial-overlay').style.display = 'flex';
         _0vAppTut();
@@ -688,7 +722,8 @@
         }
         if (e.key === 'Enter') {
             e.preventDefault();
-            if (document.getElementById('game-box').style.display === 'flex') {
+            // 턴 카운터가 0일 때는 엔터 키 무시
+            if (document.getElementById('game-box').style.display === 'flex' && _0vTC > 0) {
                 _0vCmd('ENT');
             }
             return;
@@ -926,6 +961,14 @@
 
     function _0vOBS() {
         if(_0vIsTut || !_0vTData || document.getElementById('game-box').style.display !== 'flex') return;
+        
+        // 4턴(히스토리 4개) 미만 진행 시 관측 불가
+        if(_0vHist.length < 4) {
+            _0vPlayS();
+            alert("최소 4턴 이상 진행해야 관측이 가능합니다.");
+            return;
+        }
+
         _0vPlayS();
         if(_0vAiC.length === 0) {
             _0vMCnt = 0; 
@@ -1002,7 +1045,7 @@
         }
 
         document.body.innerHTML = `
-            <div id="version-tag">0.6 Version</div>
+            <div id="version-tag">0.7 Version</div>
             ${emojiLanes}
             ${stampHtml}
             <div id="sound-control" style="z-index:20000;">
