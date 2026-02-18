@@ -48,7 +48,17 @@
         }
 
         #how-counter {
-            display: none;
+            position: fixed;
+            top: 2vh;
+            right: 10vh;
+            color: var(--cyan);
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2vh;
+            background: rgba(0,0,0,0.5);
+            padding: 1vh 2vh;
+            border-radius: 1vh;
+            border: 0.1vh solid var(--cyan);
+            z-index: 1000;
         }
         
         #sound-control { position: fixed; right: 2vh; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; align-items: center; gap: 1vh; background: rgba(0,0,0,0.7); padding: 1.5vh 1vh; border-radius: 3vh; border: 0.1vh solid var(--cyan); z-index: 10000; }
@@ -336,7 +346,7 @@
 <body oncontextmenu="return false" oncopy="return false" oncut="return false">
 
 <div id="version-tag">0.7 Version</div>
-<div id="how-counter" style="display: none;">HOW버튼 카운터: 0</div>
+<div id="how-counter">HOW버튼 카운터: 0</div>
 <div id="flash-overlay"></div>
 
 <div id="sound-control">
@@ -476,7 +486,7 @@
         _0vVol(0.15);
         const counterEl = document.getElementById('how-counter');
         const startBtn = document.getElementById('start-btn');
-        // if(counterEl) counterEl.innerText = "HOW버튼 카운터: " + _0vHowCnt; // 텍스트 제거
+        if(counterEl) counterEl.innerText = "HOW버튼 카운터: " + _0vHowCnt;
         if(startBtn && _0vHowCnt >= 1) startBtn.disabled = false;
     };
 
@@ -583,7 +593,7 @@
         // 상태 복구
         const counterEl = document.getElementById('how-counter');
         const startBtn = document.getElementById('start-btn');
-        // if(counterEl) counterEl.innerText = "HOW버튼 카운터: " + _0vHowCnt; // 텍스트 제거
+        if(counterEl) counterEl.innerText = "HOW버튼 카운터: " + _0vHowCnt;
         if(startBtn && _0vHowCnt >= 1) startBtn.disabled = false;
         _0vStart();
     }
@@ -594,7 +604,7 @@
         localStorage.setItem('sb_how_count', _0vHowCnt);
         
         const counterEl = document.getElementById('how-counter');
-        // if(counterEl) counterEl.innerText = "HOW버튼 카운터: " + _0vHowCnt; // 텍스트 제거
+        if(counterEl) counterEl.innerText = "HOW버튼 카운터: " + _0vHowCnt;
         
         const startBtn = document.getElementById('start-btn');
         if(_0vHowCnt >= 1 && startBtn) {
@@ -1024,7 +1034,7 @@
         let emojiLanes = "";
         let stampHtml = "";
         if(isParadox) {
-            const long lane = "🐈 ".repeat(22);
+            const longLane = "🐈 ".repeat(22);
             emojiLanes = `
                 <div class="emoji-lane" style="top:15vh; animation: slide-h 24s linear infinite; animation-delay: -3s;">${longLane}</div>
                 <div class="emoji-lane" style="bottom:15vh; animation: slide-h 29s linear infinite reverse; animation-delay: -7s;">${longLane}</div>
