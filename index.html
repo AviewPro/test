@@ -460,8 +460,10 @@
     let _0vMInt = null; 
     let _0vMCnt = 0; 
     let _0vPCnt = 0;
-    let _0vHowCnt = 0;
     
+    // 로컬 스토리지에서 카운트 불러오기
+    let _0vHowCnt = parseInt(localStorage.getItem('sb_how_count')) || 0;
+
     let _0vBgm = new Audio("002. ErikMMusic - The Dusty Attic.mp3");
     _0vBgm.loop = true;
     _0vBgm.playbackRate = 2.0;
@@ -479,6 +481,15 @@
     const _0vBodyOri = document.body.innerHTML;
     let _0vPoisInt = null;
 
+    // 초기 상태 반영
+    window.onload = function() {
+        _0vVol(0.15);
+        const counterEl = document.getElementById('how-counter');
+        const startBtn = document.getElementById('start-btn');
+        if(counterEl) counterEl.innerText = "HOW버튼 카운터: " + _0vHowCnt;
+        if(startBtn && _0vHowCnt >= 1) startBtn.disabled = false;
+    };
+
     function _0vVol(val) { 
         _0vCurVol = parseFloat(val);
         _0vBgm.volume = _0vCurVol; 
@@ -491,8 +502,6 @@
         _0vLSfx.volume = Math.min(1.0, _0vCurVol * 1.5);
         _0vDSfx.volume = Math.min(1.0, _0vCurVol * 1.5);
     }
-    
-    _0vVol(0.15);
 
     function _0vPlayC() { 
         const sc = _0vCSfx.cloneNode(); 
@@ -577,20 +586,28 @@
         }
         
         const oldPlayCount = _0vPCnt;
-        const oldHowCount = _0vHowCnt;
         document.body.innerHTML = _0vBodyOri;
         _0vPCnt = oldPlayCount;
-        _0vHowCnt = oldHowCount;
         
         _0vVol(document.getElementById('volume-slider')?.value || 0.15);
+        // 상태 복구
+        const counterEl = document.getElementById('how-counter');
+        const startBtn = document.getElementById('start-btn');
+        if(counterEl) counterEl.innerText = "HOW버튼 카운터: " + _0vHowCnt;
+        if(startBtn && _0vHowCnt >= 1) startBtn.disabled = false;
         _0vStart();
     }
 
     function _0vHTP() {
+        // 카운트 증가 및 로컬 스토리지 저장
         _0vHowCnt++;
-        document.getElementById('how-counter').innerText = "HOW버튼 카운터: " + _0vHowCnt;
+        localStorage.setItem('sb_how_count', _0vHowCnt);
+        
+        const counterEl = document.getElementById('how-counter');
+        if(counterEl) counterEl.innerText = "HOW버튼 카운터: " + _0vHowCnt;
+        
         const startBtn = document.getElementById('start-btn');
-        if(_0vHowCnt >= 1) {
+        if(_0vHowCnt >= 1 && startBtn) {
             startBtn.disabled = false;
         }
 
@@ -821,7 +838,6 @@
         const logWindow = document.getElementById('log-window');
         const obsBtn = document.getElementById('obs-btn');
         
-        // 4턴 이상 진행되어야 OBS 활성화
         if(_0vHist.length < 4) {
             obsBtn.disabled = true;
         } else {
@@ -967,7 +983,7 @@
 
     function _0vOBS() {
         if(_0vIsTut || !_0vTData || document.getElementById('game-box').style.display !== 'flex') return;
-        if(_0vHist.length < 4) return; // 4턴 제약 안전장치
+        if(_0vHist.length < 4) return;
         _0vPlayS();
         if(_0vAiC.length === 0) {
             _0vMCnt = 0; 
