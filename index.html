@@ -278,22 +278,37 @@
         @keyframes slide-h { from { transform: translateX(-150%); } to { transform: translateX(150vw); } }
         @keyframes slide-v { from { transform: translateY(150vh); } to { transform: translateY(-150%); } }
 
+        /* 모바일 대응 미디어 쿼리 */
         @media screen and (max-width: 768px) {
-            .title-wrapper { display: none; }
+            .title-wrapper, #version-tag, #setup-footer { display: none !important; }
             #setup { width: 90vw; margin-top: 5vh; }
             #game-box, #info-panel { 
-                width: 90vw; 
-                height: auto; 
-                min-height: 80vh; 
-                flex-shrink: 0;
+                width: 95vw; 
+                height: 48vh; /* 패널 두 개가 한 화면에 거의 차도록 조정 */
+                min-height: auto;
+                margin-bottom: 1vh;
+                padding: 1.5vh;
             }
+            .game-container { padding-bottom: 2vh; width: 100%; }
             .setup-cat, .setup-btn, .tutorial-btn, .setup-box-container { width: 80vw; }
             .panel-center { width: 90vw; padding: 3vh; }
             
+            /* 패널들을 수직으로 배치 */
             .game-container > div[style*="flex-wrap: wrap"] {
                 flex-direction: column !important;
                 align-items: center !important;
+                gap: 1vh !important;
             }
+
+            /* 모바일에서 텍스트 크기 미세 조정 */
+            .input-view { height: 7vh; line-height: 7vh; font-size: 3.5vh; margin-bottom: 1vh; }
+            #log-window { height: 18vh; grid-auto-rows: 6vh; }
+            .log-n { font-size: 2.2vh; }
+            .log-sb { font-size: 1.4vh; }
+            .chance-area { height: 12vh; margin-bottom: 1vh; }
+            .chance-value { font-size: 4vh; }
+            .prob-cat-container { width: 12vh; height: 12vh; }
+            #turn-counter { font-size: 6vh; }
         }
     </style>
 </head>
@@ -822,7 +837,7 @@
                 currentShadow = '0 0 2.5vh var(--cyan)';
                 _0xalarmTriggered = false;
             } else {
-                _0xalarmTriggered = false;
+                _0alarmTriggered = false;
             }
 
             chanceValEl.style.color = currentColor;
