@@ -6,7 +6,7 @@
     <link rel="icon" type="image/jpeg" href="귀여운고양이도트4.jpg">
     <link rel="shortcut icon" href="귀여운고양이도트4.jpg">
     
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Bebas Neue&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Bebas+Neue&display=swap" rel="stylesheet">
     <style>
         :root { 
             --bg: #050507; --cyan: #00f2ff; --purple: #bc13fe; --green: #00ff41; --red: #ff4b2b; 
@@ -92,11 +92,13 @@
         .setup-btn { font-family: 'Bebas Neue', cursive; width: 35vh; color: #000; font-weight: 900; height: 7vh; font-size: 3.2vh; border-radius: 1.5vh; cursor: pointer; border: none; animation: neonShiftBg 10s infinite alternate linear; margin-top: 1vh; transition: transform 0.1s, filter 0.2s; letter-spacing: 0.1vh; }
         .setup-btn:hover:not(:disabled) { transform: scale(1.02); filter: brightness(1.2); }
         .setup-btn:active:not(:disabled) { transform: scale(0.98); }
-        .setup-btn:disabled { opacity: 0.3; cursor: not-allowed; animation: none; background: #444; color: #888; }
+        .setup-btn:disabled { opacity: 0.3; cursor: not-allowed; animation: none; background: #333; color: #666; }
 
         .tutorial-btn { font-family: 'Bebas Neue', cursive; width: 35vh; background: #444; color: #fff; font-weight: 700; height: 5vh; font-size: 2.5vh; border-radius: 1.5vh; cursor: pointer; border: 0.2vh solid #666; margin-bottom: 1vh; transition: 0.2s; letter-spacing: 0.1vh; }
         .tutorial-btn:hover { background: #555; transform: scale(1.02); }
-        .tutorial-btn:active { transform: scale(0.98); }
+        .tutorial-btn:active { background: #333; transform: scale(0.98); }
+        .tutorial-btn.highlight { border-color: var(--green); box-shadow: 0 0 1.5vh var(--green); animation: blinkGreen 1.5s infinite; }
+        @keyframes blinkGreen { 0%, 100% { border-color: var(--green); box-shadow: 0 0 0.5vh var(--green); } 50% { border-color: #fff; box-shadow: 0 0 2vh var(--green); } }
 
         .new-keyhole { width: 35vh; height: auto; margin-top: 1.5vh; animation: keyholeNeonShift 10s infinite alternate linear; }
 
@@ -305,21 +307,26 @@
             opacity: 0.9;
         }
 
-        @media screen and (max-width: 768px) {
+        /* Responsive Query (Updated for 1000px and Layout fixes) */
+        @media screen and (max-width: 1000px) {
+            .title-wrapper { display: none !important; }
             #setup { width: 90vw; }
             #game-box, #info-panel { 
-                width: 90vw; 
-                height: auto; 
-                min-height: 80vh; 
+                width: 100vw !important; 
+                height: 75vh; 
+                min-height: 75vh;
+                margin-left: 0;
+                margin-right: 0;
+                border-radius: 0;
                 flex-shrink: 0;
             }
             .setup-cat, .setup-btn, .tutorial-btn, .setup-box-container { width: 80vw; }
-            .header-title { font-size: 4vh; letter-spacing: 0.5vh; }
             .panel-center { width: 90vw; padding: 3vh; }
             
             .game-container > div[style*="flex-wrap: wrap"] {
                 flex-direction: column !important;
                 align-items: center !important;
+                gap: 0 !important;
             }
         }
     </style>
@@ -364,8 +371,8 @@
         <div class="setup-box-container">
             <img src="귀여운고양이도트4.jpg" class="setup-cat">
         </div>
-        <button onclick="_0vHTP()" class="tutorial-btn">How to Play</button>
-        <button id="start-btn" onclick="_0vStart()" class="setup-btn" disabled>Start Single Mode</button>
+        <button id="tut-start-btn" onclick="_0vHTP()" class="tutorial-btn highlight">How to Play</button>
+        <button id="game-start-btn" onclick="_0vStart()" class="setup-btn" disabled>Start Single Mode</button>
         <img src="Aview.png" class="new-keyhole">
     </div>
     <div id="setup-footer">
@@ -440,8 +447,10 @@
     let _0vMInt = null; 
     let _0vMCnt = 0; 
     let _0vPCnt = 0;
-    let _0vTutCnt = 0;
     
+    // NEW: Tutorial counter logic
+    let _0vTutCount = 0;
+
     let _0vBgm = new Audio("002. ErikMMusic - The Dusty Attic.mp3");
     _0vBgm.loop = true;
     _0vBgm.playbackRate = 2.0;
@@ -510,6 +519,8 @@
             _0vClrIn(true);
         }
         if(type === 'ENT') {
+            // Check if turns remaining
+            if(_0vTC <= 0) return;
             _0vSimB('ent-btn');
             _0vPlayS();
             _0vEntCli(true);
@@ -517,7 +528,7 @@
     }
 
     function _0vStart() {
-        if (_0vTutCnt < 1) return;
+        if(_0vTutCount === 0) return; // Guard
         _0vPlayC();
         _0vPCnt++;
         if(_0vFInt) { clearInterval(_0vFInt); _0vFInt = null; }
@@ -565,18 +576,23 @@
 
     function _0vHTP() {
         if(!_0vTData) return;
-        _0vTutCnt++;
-        if(_0vTutCnt >= 1) {
-            const startBtn = document.getElementById('start-btn');
-            if(startBtn) startBtn.disabled = false;
+        _0vTutCount++;
+        // Update Start button state
+        const startBtn = document.getElementById('game-start-btn');
+        const tutBtn = document.getElementById('tut-start-btn');
+        if(_0vTutCount > 0) {
+            startBtn.disabled = false;
+            tutBtn.classList.remove('highlight');
         }
+
         _0vIsTut = true; _0vTType = ""; _0vTStep = 1;
-        _0vPlayC();
+        // Temporary start to show tutorial in game screen context
         document.getElementById('setup').style.display = 'none';
         document.getElementById('setup-footer').style.display = 'none';
         document.getElementById('game-box').style.display = 'flex';
         document.getElementById('info-panel').style.display = 'flex';
         _0vResGm();
+
         document.getElementById('obs-btn').disabled = true;
         document.getElementById('tutorial-overlay').style.display = 'flex';
         _0vAppTut();
@@ -694,15 +710,18 @@
             if (e.key === 'Enter') _0vDoObs(); return;
         }
         if (e.key === '-' || e.key === '_') {
+            // OBS Shortcut check
             if (document.getElementById('game-box').style.display === 'flex') {
-                _0vOBS();
+                const obsBtn = document.getElementById('obs-btn');
+                if(!obsBtn.disabled) _0vOBS();
             }
             return;
         }
         if (e.key === 'Enter') {
             e.preventDefault();
             if (document.getElementById('game-box').style.display === 'flex') {
-                if (_0vAiC.length > 0) {
+                // Turn counter check for Enter key
+                if(_0vTC > 0) {
                     _0vCmd('ENT');
                 }
             }
@@ -734,7 +753,7 @@
     function _0vClrIn(isSpecial) { if(!isSpecial) _0vPlayC(); _0vInS = ""; document.getElementById('display').innerText = "---"; }
     
     function _0vEntCli(isSpecial) {
-        if(_0vInS.length === 3 && _0vTC > 0 && _0vAiC.length > 0) {
+        if(_0vInS.length === 3 && _0vTC > 0) {
             if(!isSpecial) _0vPlayC();
             const res = _0vAiR(_0vInS);
             _0vHist.push({ n: _0vInS, s: res.s, b: res.b });
@@ -802,13 +821,16 @@
         const paradoxOverlay = document.getElementById('paradox-cat-overlay');
         const logWindow = document.getElementById('log-window');
         const obsBtn = document.getElementById('obs-btn');
-        const entBtn = document.getElementById('ent-btn');
-
-        if (obsBtn) {
-            if (_0vTC >= 3) { obsBtn.disabled = true; }
-            else { obsBtn.disabled = false; }
-        }
         
+        // OBS Button Lock logic: Disable until more than 4 turns processed (meaning turn count < 3 since start is 6)
+        // Adjust logic based on initial turns (6). If turns played < 4, disable.
+        const turnsPlayed = 6 - _0vTC;
+        if(turnsPlayed < 4 && !_0vIsTut) {
+            obsBtn.disabled = true;
+        } else if (!_0vIsTut) {
+            obsBtn.disabled = false;
+        }
+
         if(_0vAiC.length === 0) {
             if(!_0vZeroTrig) {
                 if(_0vBgm) _0vBgm.pause();
@@ -851,7 +873,6 @@
                     <span class="count-highlight">${_0vPCnt}회 만에</span>
                     훈련을 통과하셨습니다
                 </div>`;
-            if (entBtn) entBtn.disabled = true;
         } else {
             deadX.style.display = 'none';
             if(paradoxOverlay) { paradoxOverlay.style.display = 'none'; paradoxOverlay.style.animation = 'none'; }
@@ -915,14 +936,15 @@
         document.getElementById('cand-list').innerHTML = slice.map(c => `<div class="cand-item" style="filter: blur(${pixelateStrength}vh) contrast(180%);">${c}</div>`).join('');
 
         const statusEl = document.getElementById('status');
+        const entBtn = document.getElementById('ent-btn');
         if(_0vTC <= 0) {
-            if (entBtn) entBtn.disabled = true;
+            entBtn.disabled = true;
             statusEl.innerText = "측정 완료 (관측만 가능)";
             statusEl.style.animation = "none";
             statusEl.style.color = "var(--red)";
             statusEl.style.textShadow = "0 0 1vh var(--red)";
         } else {
-            if (entBtn && _0vAiC.length > 0) entBtn.disabled = false;
+            entBtn.disabled = false;
             statusEl.innerText = "고양이 위치 관측 중...";
             statusEl.style.animation = "neonShift 10s infinite alternate linear";
         }
@@ -948,7 +970,9 @@
 
     function _0vOBS() {
         if(_0vIsTut || !_0vTData || document.getElementById('game-box').style.display !== 'flex') return;
-        if(_0vTC >= 3) return;
+        // Turn check within function as well
+        if((6 - _0vTC) < 4) return;
+
         _0vPlayS();
         if(_0vAiC.length === 0) {
             _0vMCnt = 0; 
