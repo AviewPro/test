@@ -46,6 +46,20 @@
             letter-spacing: 0.1vh;
             z-index: 500;
         }
+
+        /* 튜토리얼 카운터 스타일 추가 */
+        #tutorial-counter-display {
+            position: fixed;
+            top: 2vh;
+            right: 8vh;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 3vh;
+            font-weight: 900;
+            color: var(--green);
+            text-shadow: 0 0 1vh var(--green);
+            z-index: 10001;
+            display: none;
+        }
         
         #sound-control { position: fixed; right: 2vh; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; align-items: center; gap: 1vh; background: rgba(0,0,0,0.7); padding: 1.5vh 1vh; border-radius: 3vh; border: 0.1vh solid var(--cyan); z-index: 10000; }
         #sound-control input[type=range] { -webkit-appearance: slider-vertical; width: 0.8vh; height: 15vh; cursor: pointer; }
@@ -92,7 +106,6 @@
         .setup-btn { font-family: 'Bebas Neue', cursive; width: 35vh; color: #000; font-weight: 900; height: 7vh; font-size: 3.2vh; border-radius: 1.5vh; cursor: pointer; border: none; animation: neonShiftBg 10s infinite alternate linear; margin-top: 1vh; transition: transform 0.1s, filter 0.2s; letter-spacing: 0.1vh; }
         .setup-btn:hover { transform: scale(1.02); filter: brightness(1.2); }
         .setup-btn:active { transform: scale(0.98); }
-        .setup-btn:disabled { opacity: 0.3; cursor: not-allowed; filter: grayscale(1); }
 
         .tutorial-btn { font-family: 'Bebas Neue', cursive; width: 35vh; background: #444; color: #fff; font-weight: 700; height: 5vh; font-size: 2.5vh; border-radius: 1.5vh; cursor: pointer; border: 0.2vh solid #666; margin-bottom: 1vh; transition: 0.2s; letter-spacing: 0.1vh; }
         .tutorial-btn:hover { background: #555; transform: scale(1.02); }
@@ -305,19 +318,16 @@
             opacity: 0.9;
         }
 
-        @media screen and (max-width: 1000px) {
-            .title-wrapper { display: none; }
-            #game-box, #info-panel { 
-                width: 100vw; 
-                height: 75vh;
-                margin-bottom: 3vh;
-                border-radius: 0;
-            }
-        }
-
         @media screen and (max-width: 768px) {
             #setup { width: 90vw; }
+            #game-box, #info-panel { 
+                width: 90vw; 
+                height: auto; 
+                min-height: 80vh; 
+                flex-shrink: 0;
+            }
             .setup-cat, .setup-btn, .tutorial-btn, .setup-box-container { width: 80vw; }
+            .header-title { font-size: 4vh; letter-spacing: 0.5vh; }
             .panel-center { width: 90vw; padding: 3vh; }
             
             .game-container > div[style*="flex-wrap: wrap"] {
@@ -329,7 +339,8 @@
 </head>
 <body oncontextmenu="return false" oncopy="return false" oncut="return false">
 
-<div id="version-tag">0.7 Version</div>
+<div id="version-tag">0.6 Version</div>
+<div id="tutorial-counter-display">STEP: 0 / 6</div>
 <div id="flash-overlay"></div>
 
 <div id="sound-control">
@@ -368,7 +379,7 @@
             <img src="귀여운고양이도트4.jpg" class="setup-cat">
         </div>
         <button onclick="_0vHTP()" class="tutorial-btn">How to Play</button>
-        <button id="start-btn" onclick="_0vStart()" class="setup-btn" disabled>Start Single Mode</button>
+        <button onclick="_0vStart()" class="setup-btn">Start Single Mode</button>
         <img src="Aview.png" class="new-keyhole">
     </div>
     <div id="setup-footer">
@@ -443,7 +454,6 @@
     let _0vMInt = null; 
     let _0vMCnt = 0; 
     let _0vPCnt = 0;
-    let _0vTutCnt = 0;
     
     let _0vBgm = new Audio("002. ErikMMusic - The Dusty Attic.mp3");
     _0vBgm.loop = true;
@@ -558,24 +568,20 @@
         }
         
         const oldPlayCount = _0vPCnt;
-        const oldTutCnt = _0vTutCnt;
         document.body.innerHTML = _0vBodyOri;
         _0vPCnt = oldPlayCount;
-        _0vTutCnt = oldTutCnt;
         
         _0vVol(document.getElementById('volume-slider')?.value || 0.15);
         _0vStart();
     }
 
     function _0vHTP() {
-        _0vTutCnt++;
-        const startBtn = document.getElementById('start-btn');
-        if (startBtn) startBtn.disabled = false;
         if(!_0vTData) return;
         _0vIsTut = true; _0vTType = ""; _0vTStep = 1;
         _0vStart();
         document.getElementById('obs-btn').disabled = true;
         document.getElementById('tutorial-overlay').style.display = 'flex';
+        document.getElementById('tutorial-counter-display').style.display = 'block'; // 카운터 표시
         _0vAppTut();
     }
 
@@ -633,7 +639,10 @@
         const nextBtn = document.getElementById('tut-next-btn');
         const turnCounter = document.getElementById('turn-counter');
         const chanceBox = document.getElementById('chance-box');
+        const counterDisp = document.getElementById('tutorial-counter-display');
         
+        if(counterDisp) counterDisp.innerText = `STEP: ${_0vTStep} / 6`;
+
         document.getElementById('game-box').classList.add('tutorial-dim');
         document.getElementById('info-panel').classList.add('tutorial-dim');
         document.querySelectorAll('.key-btn, #ent-btn, #clr-btn, #obs-btn, #display, #log-window, #candidates-box, #chance-area, #zero-btn, .log-item, #chance-box').forEach(el => el.classList.remove('tutorial-highlight'));
@@ -698,7 +707,7 @@
         }
         if (e.key === 'Enter') {
             e.preventDefault();
-            if (document.getElementById('game-box').style.display === 'flex' && _0vTC > 0) {
+            if (document.getElementById('game-box').style.display === 'flex') {
                 _0vCmd('ENT');
             }
             return;
@@ -903,8 +912,6 @@
 
         const statusEl = document.getElementById('status');
         const entBtn = document.getElementById('ent-btn');
-        const obsBtn = document.getElementById('obs-btn');
-
         if(_0vTC <= 0) {
             entBtn.disabled = true;
             statusEl.innerText = "측정 완료 (관측만 가능)";
@@ -915,16 +922,6 @@
             entBtn.disabled = false;
             statusEl.innerText = "고양이 위치 관측 중...";
             statusEl.style.animation = "neonShift 10s infinite alternate linear";
-        }
-
-        if (obsBtn) {
-            if (_0vTC > 2) {
-                obsBtn.disabled = true;
-                obsBtn.style.opacity = "0.1";
-            } else {
-                obsBtn.disabled = false;
-                obsBtn.style.opacity = "1";
-            }
         }
     }
 
@@ -947,8 +944,7 @@
     }
 
     function _0vOBS() {
-        if(_0vIsTut || !_0vTData || document.getElementById('game-box').style.display !== 'flex') return;
-        if (_0vTC > 2) return;
+        if((_0vIsTut && _0vTStep < 5) || !_0vTData || document.getElementById('game-box').style.display !== 'flex') return;
         _0vPlayS();
         if(_0vAiC.length === 0) {
             _0vMCnt = 0; 
@@ -1025,7 +1021,7 @@
         }
 
         document.body.innerHTML = `
-            <div id="version-tag">0.7 Version</div>
+            <div id="version-tag">0.6 Version</div>
             ${emojiLanes}
             ${stampHtml}
             <div id="sound-control" style="z-index:20000;">
