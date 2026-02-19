@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <title>Schrödinger Baseball - Single Mode</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <link rel="icon" href="Neoncat Icon.png" type="image/png">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Bebas+Neue&display=swap" rel="stylesheet">
     <style>
@@ -31,18 +30,8 @@
             min-height: 100vh;
             margin: 0; 
             padding: 0;
-            /* 터치 최적화 및 스크롤 설정 */
             user-select: none;
             -webkit-user-select: none;
-            touch-action: pan-y; /* 세로 스크롤만 허용 */
-            overflow-y: auto;    /* 세로 스크롤 활성화 */
-            overflow-x: hidden;  /* 가로 스크롤 방지 */
-        }
-
-        /* 터치 조작 최적화 */
-        canvas, button, .game-element {
-            touch-action: manipulation;
-            -webkit-tap-highlight-color: transparent;
         }
 
         #version-tag {
@@ -56,26 +45,9 @@
             z-index: 500;
         }
         
-        /* 음량 조절바: 모바일(768px 이하)에서 숨김 */
         #sound-control { position: fixed; right: 2vh; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; align-items: center; gap: 1vh; background: rgba(0,0,0,0.7); padding: 1.5vh 1vh; border-radius: 3vh; border: 0.1vh solid var(--cyan); z-index: 10000; }
         #sound-control input[type=range] { -webkit-appearance: slider-vertical; width: 0.8vh; height: 15vh; cursor: pointer; }
         .sound-icon { font-size: 1.5vh; color: var(--cyan); }
-
-        /* 테스트 버튼 스타일 */
-        #test-reset-btn {
-            position: fixed;
-            right: 2vh;
-            top: 2vh;
-            background: rgba(255, 0, 0, 0.3);
-            border: 1px solid var(--red);
-            color: #fff;
-            padding: 1vh;
-            font-size: 1.2vh;
-            border-radius: 0.5vh;
-            cursor: pointer;
-            z-index: 10001;
-            font-family: 'Orbitron', sans-serif;
-        }
 
         .title-wrapper { position: relative; margin-top: 5vh; margin-bottom: 3vh; z-index: 300; display: flex; justify-content: center; align-items: center; flex-shrink: 0; }
         .title-bg { position: absolute; background: rgba(0, 0, 0, 0.7); width: 120%; height: 120%; border-radius: 1.5vh; filter: blur(0.5vh); z-index: -1; }
@@ -326,9 +298,6 @@
                 flex-direction: column !important;
                 align-items: center !important;
             }
-
-            /* 모바일에서 음량 조절바 숨김 */
-            #sound-control { display: none !important; }
         }
     </style>
 </head>
@@ -336,8 +305,6 @@
 
 <div id="version-tag">1.4 Version</div>
 <div id="flash-overlay"></div>
-
-<button id="test-reset-btn" onclick="localStorage.setItem('totalStartCount', 0); alert('Tutorial Count Reset!'); location.reload();">Reset Tut Count</button>
 
 <div id="sound-control">
     <span class="sound-icon">♪</span>
@@ -432,17 +399,6 @@
 </div>
 
 <script>
-    /* 추가된 터치 및 컨텍스트 방지 로직 */
-    window.oncontextmenu = function(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        return false;
-    };
-
-    document.addEventListener('touchmove', function(e) {
-        if (e.scale !== 1) { e.preventDefault(); }
-    }, { passive: false });
-
     let _0xtextData = null;
     fetch('textdata.json')
         .then(response => response.json())
@@ -764,6 +720,7 @@
             if(outcomes[key].length > maxCount) { maxCount = outcomes[key].length; bestKey = key; }
         }
         
+        // AI가 한 가지 가능성만 남았을 때도 포기하지 않고 진행 (거짓말 시스템 포함)
         if(!bestKey || _0xaiCandidates.length === 0) {
             const fakeS = Math.floor(Math.random() * 3);
             const fakeB = Math.floor(Math.random() * 3);
@@ -977,6 +934,7 @@
         const guess = document.getElementById('obs-num').value;
         if(guess.length === 4) {
             _0xplayClick();
+            // 확률이 남아있는 경우 리스트 내의 랜덤한 숫자를 정답으로 지정하여 판정
             let realSecret = _0xaiCandidates[Math.floor(Math.random() * _0xaiCandidates.length)];
             const prob = 1 / _0xaiCandidates.length * 100;
             
@@ -1127,7 +1085,7 @@
         const turnCounter = document.getElementById('turn-counter');
         if(turnCounter) {
             if (_0xturnCount > 0) {
-                const intensity = 15;
+                const intensity = 15; // 내 턴 카운터 움직임 계수 15 반영
                 const tMoveX = (Math.random()-0.5) * intensity;
                 const tMoveY = (Math.random()-0.5) * intensity;
                 turnCounter.style.transform = `translate(${tMoveX}px, ${tMoveY}px)`;
