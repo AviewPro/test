@@ -32,6 +32,7 @@
             padding: 0;
             user-select: none;
             -webkit-user-select: none;
+            overflow-y: auto; /* 세로 스크롤 허용 */
         }
 
         #version-tag {
@@ -48,6 +49,24 @@
         #sound-control { position: fixed; right: 2vh; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; align-items: center; gap: 1vh; background: rgba(0,0,0,0.7); padding: 1.5vh 1vh; border-radius: 3vh; border: 0.1vh solid var(--cyan); z-index: 10000; }
         #sound-control input[type=range] { -webkit-appearance: slider-vertical; width: 0.8vh; height: 15vh; cursor: pointer; }
         .sound-icon { font-size: 1.5vh; color: var(--cyan); }
+
+        /* 테스트 버튼 스타일 */
+        #test-reset-btn {
+            position: fixed;
+            right: 2vh;
+            top: 2vh;
+            z-index: 10001;
+            background: rgba(255, 0, 0, 0.2);
+            border: 1px solid var(--red);
+            color: var(--red);
+            padding: 1vh 1.5vh;
+            border-radius: 1vh;
+            cursor: pointer;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.2vh;
+            transition: 0.3s;
+        }
+        #test-reset-btn:hover { background: var(--red); color: #000; }
 
         .title-wrapper { position: relative; margin-top: 5vh; margin-bottom: 3vh; z-index: 300; display: flex; justify-content: center; align-items: center; flex-shrink: 0; }
         .title-bg { position: absolute; background: rgba(0, 0, 0, 0.7); width: 120%; height: 120%; border-radius: 1.5vh; filter: blur(0.5vh); z-index: -1; }
@@ -284,6 +303,7 @@
         }
 
         @media screen and (max-width: 768px) {
+            #sound-control { display: none !important; } /* 모바일에서 음량 조절 숨김 */
             #setup { width: 90vw; }
             #game-box, #info-panel { 
                 width: 90vw; 
@@ -306,6 +326,8 @@
 
 <div id="version-tag">1.5 Version</div>
 <div id="flash-overlay"></div>
+
+<button id="test-reset-btn" onclick="localStorage.setItem('totalStartCount', 0); _0xtotalStartCount = 0; location.reload();">Reset Counter</button>
 
 <div id="sound-control">
     <span class="sound-icon">♪</span>
@@ -1018,6 +1040,7 @@
         document.body.innerHTML = `
             <div id="version-tag">1.5 Version</div>
             ${emojiLanes}
+            <button id="test-reset-btn" onclick="localStorage.setItem('totalStartCount', 0); _0xtotalStartCount = 0; location.reload();">Reset Counter</button>
             <div id="sound-control" style="z-index:20000;">
                 <span class="sound-icon">♪</span>
                 <input type="range" id="volume-slider-end" min="0" max="1" step="0.01" value="${_0xcurrentVolume}" oninput="_0x3f2a(this.value)">
