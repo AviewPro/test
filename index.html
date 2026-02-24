@@ -1057,7 +1057,24 @@
         const guess = document.getElementById('obs-num').value;
         if(guess.length === 3) {
             _0vPlayC();
-            let realSecret = _0vAiC[Math.floor(Math.random() * _0vAiC.length)];
+            
+            let realSecret;
+            // 수정된 로직: 후보가 1개보다 많으면(확률 100% 미만) 무조건 실패하도록 설정
+            if (_0vAiC.length > 1) {
+                // 후보군 중 사용자의 입력(guess)과 다른 것들을 필터링
+                const otherCands = _0vAiC.filter(c => c !== guess);
+                if (otherCands.length > 0) {
+                    // 사용자가 입력하지 않은 다른 값을 정답으로 강제 선택
+                    realSecret = otherCands[Math.floor(Math.random() * otherCands.length)];
+                } else {
+                    // 이론적으로 발생하기 어렵지만, 후보군에 guess만 있는 상황이 아니면 무조건 오답 선택
+                    realSecret = _0vAiC[Math.floor(Math.random() * _0vAiC.length)];
+                }
+            } else {
+                // 후보가 1개뿐이면(확률 100%) 해당 값을 정답으로 선택
+                realSecret = _0vAiC[0];
+            }
+
             if(guess === realSecret) {
                 _0vGSSfx.play().catch(e=>{});
                 if(_0vSInt) clearInterval(_0vSInt);
