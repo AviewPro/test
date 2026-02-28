@@ -1,21 +1,12 @@
 const _c = document.getElementById('gc');
 const _x = _c.getContext('2d');
-const _HM = "저의 두번째 게임 Start to Press Any Button을 즐겨주셔서 감사합니다";
-const _sB = new Audio('띠용.mp3'), _sD = new Audio('꺼지는소리.mp3'), _sC = new Audio('단체환호.mp3');
-const _mB = 0.6;
-const _b1 = new Audio('Air 8-bit.mp3'), _b2 = new Audio('Symphony no. 25 8-bit.mp3'), _b3 = new Audio('Winter, The Four Seasons 8-bit.mp3'), _b4 = new Audio('Moonlight Sonata 8-bit.mp3');
-[_b1, _b2, _b3, _b4].forEach(a => a.loop = true); _b1.volume = 0.1; _b2.volume = 0.3; _b3.volume = 0.3; _b4.volume = 0.25; _sC.volume = 0.5;
-const _iA = new Image(); _iA.src = 'Aview.png';
-
-let _gs = false, _dc = parseInt(localStorage.getItem('deathCount')) || 0, _tc = parseInt(localStorage.getItem('totalClears')) || 0, _hc = localStorage.getItem('hasCleared') === 'true';
-let _cs = 1, _tr = false, _pe = false, _f = 0, _ie = false, _sc = false, _he = false, _hy = 0, _id = false, _dt = 0, _ps = [], _md = false, _ds = 1, _s8 = { t: false, b: false };
-
-// MEMO: Full list of credit messages based on user request.
-const _CM = [
+const _HM = [
     "저의 두번째 게임 Start to Press Any Button을 즐겨주셔서 감사합니다.",
     "",
     "이 게임을 2번이나 클리어하다니 부디 즐거우셨길 바랍니다.",
+    "",
     "항아리류 똥겜의 이미지를 생각하며 만든 게임이라 고단한 길이였다면 정상입니다.",
+    "",
     "느끼셨겠지만 제목은 많은 고전게임에서 자주 보였던 문구인",
     "'Press any button to Start'를 비틀어서 만든겁니다.",
     "",
@@ -24,13 +15,25 @@ const _CM = [
     "",
     "그리고 중력이란 시스템을 넣는데 뭔가 레벨에 따라 중력이 다르게 설정을 하면서",
     "배경을 달로 해야겠다는 아이디어를 떠올렸습니다.",
+    "",
     "저는 항상 우주와 묵직한 클래식들이 잘어울린다고 생각해왔는데,",
     "고전게임하면 8비트 음악이라고 생각을 해서 8비트 클래식을 채용했습니다.",
+    "",
     "특히 엔딩은 월광소나타로 장식하여 달과 엮어서 마무리하는게 좋을것 같았습니다.",
     "",
     "여기까지 개발자의 지루한 감상문이었습니다. 감사합니다.",
+    "",
     "다음에는 진정한 클래식인 플랫포머를 비틀어서 만들어보고 싶네요."
 ];
+
+const _sB = new Audio('띠용.mp3'), _sD = new Audio('꺼지는소리.mp3'), _sC = new Audio('단체환호.mp3');
+const _mB = 0.6;
+const _b1 = new Audio('Air 8-bit.mp3'), _b2 = new Audio('Symphony no. 25 8-bit.mp3'), _b3 = new Audio('Winter, The Four Seasons 8-bit.mp3'), _b4 = new Audio('Moonlight Sonata 8-bit.mp3');
+[_b1, _b2, _b3, _b4].forEach(a => a.loop = true); _b1.volume = 0.1; _b2.volume = 0.3; _b3.volume = 0.3; _b4.volume = 0.25; _sC.volume = 0.5;
+const _iA = new Image(); _iA.src = 'Aview.png';
+
+let _gs = false, _dc = parseInt(localStorage.getItem('deathCount')) || 0, _tc = parseInt(localStorage.getItem('totalClears')) || 0, _hc = localStorage.getItem('hasCleared') === 'true';
+let _cs = 1, _tr = false, _pe = false, _f = 0, _ie = false, _sc = false, _he = false, _hy = 0, _id = false, _dt = 0, _ps = [], _md = false, _ds = 1, _s8 = { t: false, b: false };
 
 function _uB() {
     if (_tr && _ie && _f >= 1) return;
@@ -44,14 +47,16 @@ function _sa() { [_b1, _b2, _b3, _b4].forEach(a => { a.pause(); a.currentTime = 
 function _tF() { if (!document.fullscreenElement) document.documentElement.requestFullscreen().catch(e => {}); }
 function _vh(p) { return (_c.height * p) / 100; }
 
+function _bt_r() {
+    _bt.w = _vh(25); _bt.h = _vh(10); _bt.x = _c.width / 2 - _bt.w / 2; _bt.y = _vh(70);
+    _bt.vx = 0; _bt.vy = 0; _bt.a = 0; _bt.va = 0;
+    let gb = _vh(0.05); _bt.g = (_cs === 1) ? gb * 0.25 : gb;
+    _s8 = { t: false, b: false };
+}
+
 const _bt = {
     w: 0, h: 0, x: 0, y: 0, vx: 0, vy: 0, g: 0, a: 0, va: 0,
-    r: function() {
-        this.w = _vh(25); this.h = _vh(10); this.x = _c.width / 2 - this.w / 2; this.y = _vh(70);
-        this.vx = 0; this.vy = 0; this.a = 0; this.va = 0;
-        let gb = _vh(0.05); this.g = (_cs === 1) ? gb * 0.25 : gb;
-        _s8 = { t: false, b: false };
-    },
+    r: _bt_r,
     d: function() {
         this.ds(this.x, this.y);
         if (this.x < 0) this.ds(this.x + _c.width, this.y);
@@ -156,38 +161,46 @@ function _dTB() {
     _x.setLineDash([]);
 }
 
+/* MEMO: Hidden Ending Credits. Text scroll logic with 30% smaller font (_vh(2.8)). */
 function _dHE() {
     if (!_he) return; _x.fillStyle = 'black'; _x.fillRect(0, 0, _c.width, _c.height);
-    _x.textAlign = 'center'; _x.fillStyle = 'white'; _x.font = `${_vh(4)}px 'Courier New'`;
-    _x.fillText(_HM, _c.width / 2, _c.height - _hy); _hy += 1.2;
-    if (_c.height - _hy < -_vh(10)) { _x.fillStyle = 'gray'; _x.font = `${_vh(3)}px 'Courier New'`; _x.fillText('Press Any Button to Return', _c.width / 2, _vh(90)); }
+    _x.textAlign = 'center'; _x.fillStyle = 'white'; _x.font = `${_vh(2.8)}px 'Courier New'`;
+    
+    const lineGap = _vh(4.5);
+    _HM.forEach((line, i) => {
+        let ty = (_c.height - _hy) + (i * lineGap);
+        if (ty > -_vh(5) && ty < _c.height + _vh(5)) {
+            _x.fillText(line, _c.width / 2, ty);
+        }
+    });
+    _hy += 1.0;
+
+    const lastLineY = (_c.height - _hy) + ((_HM.length - 1) * lineGap);
+    if (lastLineY < -_vh(5)) { 
+        _x.fillStyle = 'gray'; _x.font = `${_vh(3)}px 'Courier New'`; 
+        _x.fillText('Press Any Button to Return', _c.width / 2, _vh(90)); 
+    }
 }
 
 function _dUI() {
     if (_he) { _dHE(); return; }
     if (_ie && _f < 1) {
-        _x.textAlign = 'center'; _x.fillStyle = 'yellow'; _x.font = `bold ${_vh(6)}px 'Courier New'`; _x.fillText('Congratulations! you make it!', _c.width / 2, _vh(20));
-        _x.fillStyle = 'white'; _x.font = `${_vh(5)}px 'Courier New'`; _x.fillText('Press Any Button to Start', _c.width / 2, _vh(45));
-        _x.font = `bold ${_vh(12)}px 'Courier New'`; _x.fillText(`Deaths: ${_dc}`, _c.width / 2, _vh(65));
-        if (_dc <= 1) { _x.fillStyle = '#FFD700'; _x.fillText('UNBELIEVABLE', _c.width / 2, _vh(80)); }
+        _x.textAlign = 'center'; _x.fillStyle = 'yellow'; _x.font = `bold ${_vh(6)}px 'Courier New'`; _x.fillText('Congratulations! you make it!', _c.width / 2, _vh(25));
+        _x.fillStyle = 'white'; _x.font = `${_vh(5)}px 'Courier New'`; _x.fillText('Press Any Button to Start', _c.width / 2, _vh(50));
+        _x.font = `bold ${_vh(12)}px 'Courier New'`; _x.fillText(`Deaths: ${_dc}`, _c.width / 2, _vh(70));
+        if (_dc <= 1) { _x.fillStyle = '#FFD700'; _x.fillText('UNBELIEVABLE', _c.width / 2, _vh(85)); }
     } else if (_sc && _f < 1) {
-        _x.textAlign = 'center'; _x.fillStyle = 'white'; _x.font = `bold ${_vh(5)}px 'Courier New'`; _x.fillText('ENDING CREDITS', _c.width / 2, _vh(12));
-        
-        // MEMO: Display multi-line credit text. Font size reduced by 30% (_vh(2.8)).
-        _x.font = `${_vh(2.8)}px 'Courier New'`;
-        _x.fillStyle = 'white';
-        let sy = _vh(22), lh = _vh(4.2);
-        _CM.forEach((line, i) => { _x.fillText(line, _c.width / 2, sy + (i * lh)); });
-
-        _x.fillStyle = 'yellow'; _x.font = `bold ${_vh(3.2)}px 'Courier New'`;
-        _x.fillText('Press Any Button to Start', _c.width / 2, _vh(2)); 
-
+        _x.textAlign = 'center'; _x.fillStyle = 'white'; _x.font = `bold ${_vh(6)}px 'Courier New'`; _x.fillText('ENDING CREDITS', _c.width / 2, _vh(20));
+        _x.font = `${_vh(4)}px 'Courier New'`; _x.fillText('Thanks for playing', _c.width / 2, _vh(28));
+        _x.font = `${_vh(5)}px 'Courier New'`; _x.fillText('Press Any Button to Start', _c.width / 2, _vh(50));
+        _x.fillStyle = 'yellow'; _x.font = `${_vh(4)}px 'Courier New'`; _x.fillText('Made By Aview / Completed By You', _c.width / 2, _vh(58));
         if (_iA.complete) {
             const iw = _vh(45), ih = (_iA.height / _iA.width) * iw, lx = _c.width / 2 - iw / 2, ly = _vh(95) - ih;
             _x.save();
-            let isVisible = true; if (_tc >= 2) { isVisible = (Date.now() % 2000 < 1000); }
-            if (isVisible) { _x.shadowBlur = 40; _x.shadowColor = 'yellow'; } else { _x.shadowBlur = 0; }
-            _x.drawImage(_iA, lx, ly, iw, ih); _x.restore();
+            let isV = true; if (_tc >= 2) isV = (Date.now() % 2000 < 1000);
+            if (isV) { _x.shadowBlur = 40; _x.shadowColor = 'yellow'; } else { _x.shadowBlur = 0; }
+            _x.drawImage(_iA, lx, ly, iw, ih);
+            _x.restore();
         }
     } else if (_tr && _f >= 1 && !_ie) {
         _x.fillStyle = 'yellow'; _x.font = `bold ${_vh(7)}px 'Courier New'`; _x.textAlign = 'center'; _x.fillText(`STAGE ${_cs}`, _c.width / 2, _c.height / 2);
@@ -220,54 +233,35 @@ function _hI(e) {
     if (e.cancelable) e.preventDefault(); _tF(); 
     if (e.type === 'mousedown' || e.type === 'touchstart') _md = true;
     if (e.type === 'mouseup' || e.type === 'mouseleave' || e.type === 'touchend') _md = false;
-    
     let cx, cy; const r = _c.getBoundingClientRect();
-    if (e.type.startsWith('touch')) { 
-        const t = e.touches[0] || e.changedTouches[0]; cx = t.clientX - r.left; cy = t.clientY - r.top; 
-    } else { cx = e.clientX - r.left; cy = e.clientY - r.top; }
+    if (e.type.startsWith('touch')) { const t = e.touches[0] || e.changedTouches[0]; cx = t.clientX - r.left; cy = t.clientY - r.top; } else { cx = e.clientX - r.left; cy = e.clientY - r.top; }
 
-    if (_he) { 
-        if (e.type === 'mousedown' || e.type === 'keydown' || e.type === 'touchstart') { 
-            _he = false; _sc = false; _cs = 1; _gs = false; 
-            document.body.style.backgroundImage = "url('space_back1.gif')"; _sa(); _uB(); _bt.r(); 
-        } return; 
-    }
-    
+    if (_he) { if (e.type === 'mousedown' || e.type === 'keydown' || e.type === 'touchstart') { _he = false; _sc = false; _cs = 1; _gs = false; document.body.style.backgroundImage = "url('space_back1.gif')"; _sa(); _uB(); _bt.r(); } return; }
     if (!_gs && !_id && !_ie && !_sc) {
         if (e.type === 'mousedown' || e.type === 'touchstart' || e.type === 'keydown') {
-            if (_hc && _cs === 1 && (e.type !== 'keydown')) { 
-                const bx = _c.width / 2 - _bt.w / 2, by = _bt.y + _vh(12); 
-                if (cx > bx && cx < bx + _bt.w && cy > by && cy < by + _bt.h) { _sc = true; document.body.style.backgroundImage = "url('space_back2.gif')"; _uB(); return; } 
-            }
+            if (_hc && _cs === 1 && (e.type !== 'keydown')) { const bx = _c.width/2 - _bt.w/2, by = _bt.y + _vh(12); if (cx > bx && cx < bx + _bt.w && cy > by && cy < by + _bt.h) { _sc = true; document.body.style.backgroundImage = "url('space_back2.gif')"; _uB(); return; } }
             _gs = true; _uB();
         } return;
     }
     if ((_ie || _sc) && !_tr) {
         if (e.type === 'mousedown' || e.type === 'touchstart' || e.type === 'keydown') {
-            if (_sc && _tc >= 2 && _iA.complete && (e.type !== 'keydown')) { 
-                const iw = _vh(45), ih = (_iA.height / _iA.width) * iw, lx = _c.width / 2 - iw / 2, ly = _vh(95) - ih; 
-                if (cx > lx && cx < lx + iw && cy > ly && cy < ly + ih) { _he = true; _hy = 0; _uB(); return; } 
-            }
+            if (_sc && _tc >= 2 && _iA.complete && (e.type !== 'keydown')) { const iw = _vh(45), ih = (_iA.height / _iA.width) * iw, lx = _c.width/2 - iw/2, ly = _vh(95) - ih; if (cx > lx && cx < lx + iw && cy > ly && cy < ly + ih) { _he = true; _hy = 0; _uB(); return; } }
             if (_ie) { _dc = 0; localStorage.setItem('deathCount', 0); }
-            _ie = false; _sc = false; _cs = 1; _gs = false; _pe = false; _f = 0; 
-            document.body.style.backgroundImage = "url('space_back1.gif')"; _sa(); _uB(); _bt.r();
+            _ie = false; _sc = false; _cs = 1; _gs = false; _pe = false; _f = 0; document.body.style.backgroundImage = "url('space_back1.gif')"; _sa(); _uB(); _bt.r();
         } return;
     }
     if (_tr || _id || _pe) return;
     if (e.type === 'mousedown' || e.type === 'touchstart') {
-        const bx = _bt.x + _bt.w / 2, by = _bt.y + _bt.h / 2, dx = cx - bx, dy = cy - by, cos = Math.cos(-_bt.a), sin = Math.sin(-_bt.a), rx = dx * cos - dy * sin, ry = dx * sin + dy * cos;
-        if (Math.abs(rx) <= _bt.w / 2 && Math.abs(ry) <= _bt.h / 2) {
+        const bx = _bt.x + _bt.w/2, by = _bt.y + _bt.h/2, dx = cx - bx, dy = cy - by, cos = Math.cos(-_bt.a), sin = Math.sin(-_bt.a), rx = dx * cos - dy * sin, ry = dx * sin + dy * cos;
+        if (Math.abs(rx) <= _bt.w/2 && Math.abs(ry) <= _bt.h/2) {
             const d = Math.sqrt(dx*dx + dy*dy), mD = Math.sqrt(Math.pow(_bt.w/2, 2) + Math.pow(_bt.h/2, 2)); _ds = Math.min(d / mD, 1);
             _sB.currentTime = 0; _sB.volume = 0.1 + (_ds * (_mB - 0.1)); _sB.play();
             let m = (_cs === 1) ? 0.05 : 0.2, b = (_cs === 1) ? _vh(0.3) : _vh(1.2);
-            _bt.vx = (bx - cx) * m; _bt.vy = (by - cy) * m - b;
-            if (_cs >= 7) _bt.va += (dx / _bt.w) * 0.15;
+            _bt.vx = (bx - cx) * m; _bt.vy = (by - cy) * m - b; if (_cs >= 7) _bt.va += (dx / _bt.w) * 0.15;
         }
     }
 }
 
-_c.addEventListener('touchstart', _hI, { passive: false });
-_c.addEventListener('touchend', _hI, { passive: false });
-_c.addEventListener('mousedown', _hI); window.addEventListener('mouseup', _hI); document.addEventListener('keydown', _hI);
+_c.addEventListener('touchstart', _hI, { passive: false }); _c.addEventListener('touchend', _hI, { passive: false }); _c.addEventListener('mousedown', _hI); window.addEventListener('mouseup', _hI); document.addEventListener('keydown', _hI);
 window.addEventListener('resize', () => { _c.width = window.innerWidth; _c.height = window.innerHeight; _bt.r(); });
 _c.width = window.innerWidth; _c.height = window.innerHeight; _bt.r(); _gL();
