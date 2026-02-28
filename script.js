@@ -222,13 +222,11 @@ function _hI(e) {
                 if (cx > lx && cx < lx + iw && cy > ly && cy < ly + ih) { _he = true; _hy = 0; _uB(); return; } 
             }
             
-            // 상태를 해제하기 전에 엔딩 화면이었는지 명확히 확인
             const _isEnding = _ie;
             
             _ie = false; _sc = false; _cs = 1; _gs = false; _pe = false; _f = 0; 
             document.body.style.backgroundImage = "url('space_back1.gif')"; _sa(); _uB(); _bt.r();
             
-            // 엔딩 화면에서 나갈 때만 데스 카운트 초기화 수행
             if (_isEnding) { 
                 _dc = 0; 
                 localStorage.setItem('deathCount', 0); 
