@@ -1,7 +1,7 @@
 const _c = document.getElementById('gc');
 const _x = _c.getContext('2d');
 const _HM = "저의 두번째 게임 Start to Press Any Button을 즐겨주셔서 감사합니다";
-const _sB = new Audio('띠용.mp3'), _sD = new Audio('꺼지는소리.mp3'), _sC = new Audio('단체환호.mp3'); // 환호 소리 추가
+const _sB = new Audio('띠용.mp3'), _sD = new Audio('꺼지는소리.mp3'), _sC = new Audio('단체환호.mp3');
 const _mB = 0.6;
 const _b1 = new Audio('Air 8-bit.mp3'), _b2 = new Audio('Symphony no. 25 8-bit.mp3'), _b3 = new Audio('Winter, The Four Seasons 8-bit.mp3'), _b4 = new Audio('Moonlight Sonata 8-bit.mp3');
 [_b1, _b2, _b3, _b4].forEach(a => a.loop = true); _b1.volume = 0.1; _b2.volume = 0.3; _b3.volume = 0.3; _b4.volume = 0.25; _sC.volume = 0.5;
@@ -9,6 +9,28 @@ const _iA = new Image(); _iA.src = 'Aview.png';
 
 let _gs = false, _dc = parseInt(localStorage.getItem('deathCount')) || 0, _tc = parseInt(localStorage.getItem('totalClears')) || 0, _hc = localStorage.getItem('hasCleared') === 'true';
 let _cs = 1, _tr = false, _pe = false, _f = 0, _ie = false, _sc = false, _he = false, _hy = 0, _id = false, _dt = 0, _ps = [], _md = false, _ds = 1, _s8 = { t: false, b: false };
+
+// MEMO: Full list of credit messages based on user request.
+const _CM = [
+    "저의 두번째 게임 Start to Press Any Button을 즐겨주셔서 감사합니다.",
+    "",
+    "이 게임을 2번이나 클리어하다니 부디 즐거우셨길 바랍니다.",
+    "항아리류 똥겜의 이미지를 생각하며 만든 게임이라 고단한 길이였다면 정상입니다.",
+    "느끼셨겠지만 제목은 많은 고전게임에서 자주 보였던 문구인",
+    "'Press any button to Start'를 비틀어서 만든겁니다.",
+    "",
+    "맨 처음에는 클리커류 게임을 만들어볼까 했었는데,",
+    "좀 더 액티브하게 상호작용을 하는 통통튀는 게임을 만들게 되었네요. :)",
+    "",
+    "그리고 중력이란 시스템을 넣는데 뭔가 레벨에 따라 중력이 다르게 설정을 하면서",
+    "배경을 달로 해야겠다는 아이디어를 떠올렸습니다.",
+    "저는 항상 우주와 묵직한 클래식들이 잘어울린다고 생각해왔는데,",
+    "고전게임하면 8비트 음악이라고 생각을 해서 8비트 클래식을 채용했습니다.",
+    "특히 엔딩은 월광소나타로 장식하여 달과 엮어서 마무리하는게 좋을것 같았습니다.",
+    "",
+    "여기까지 개발자의 지루한 감상문이었습니다. 감사합니다.",
+    "다음에는 진정한 클래식인 플랫포머를 비틀어서 만들어보고 싶네요."
+];
 
 function _uB() {
     if (_tr && _ie && _f >= 1) return;
@@ -21,31 +43,6 @@ function _uB() {
 function _sa() { [_b1, _b2, _b3, _b4].forEach(a => { a.pause(); a.currentTime = 0; }); }
 function _tF() { if (!document.fullscreenElement) document.documentElement.requestFullscreen().catch(e => {}); }
 function _vh(p) { return (_c.height * p) / 100; }
-
-/* MEMO: Independent test functions for clearing data and skipping stages. */
-function _dTestButtons() {
-    if (_gs || _ie || _sc || _he || _tr) return;
-    const bw = _vh(15), bh = _vh(6), gap = _vh(2);
-    const x = _c.width - bw - gap, y1 = _c.height - bh * 2 - gap * 2, y2 = _c.height - bh - gap;
-    _x.font = `bold ${_vh(2.5)}px Arial`; _x.textAlign = 'center'; _x.textBaseline = 'middle';
-    _x.fillStyle = 'rgba(255, 0, 0, 0.7)'; _x.fillRect(x, y1, bw, bh);
-    _x.fillStyle = 'white'; _x.fillText('초기화', x + bw/2, y1 + bh/2);
-    _x.fillStyle = 'rgba(0, 0, 255, 0.7)'; _x.fillRect(x, y2, bw, bh);
-    _x.fillStyle = 'white'; _x.fillText('8강 점프', x + bw/2, y2 + bh/2);
-}
-
-function _hTestClick(cx, cy) {
-    if (_gs || _ie || _sc || _he || _tr) return false;
-    const bw = _vh(15), bh = _vh(6), gap = _vh(2);
-    const x = _c.width - bw - gap, y1 = _c.height - bh * 2 - gap * 2, y2 = _c.height - bh - gap;
-    if (cx > x && cx < x + bw) {
-        if (cy > y1 && cy < y1 + bh) { 
-            localStorage.clear(); location.reload(); return true; 
-        } else if (cy > y2 && cy < y2 + bh) { 
-            _cs = 8; _gs = true; _uB(); _bt.r(); return true; 
-        }
-    } return false;
-}
 
 const _bt = {
     w: 0, h: 0, x: 0, y: 0, vx: 0, vy: 0, g: 0, a: 0, va: 0,
@@ -128,16 +125,12 @@ function _sNS() {
     }, 16);
 }
 
-/* MEMO: 8 Stage Clear - Plays "단체환호.mp3" after 0.1s delay. */
 function _sEN() {
     _ie = true; _tr = true; _f = 1; _sa(); _hc = true; 
     _tc++; localStorage.setItem('totalClears', _tc); 
     localStorage.setItem('hasCleared', 'true');
     document.body.style.backgroundImage = "url('space_back2.gif')";
-    
-    // Play cheer sound after 0.1s
     setTimeout(() => { _sC.currentTime = 0; _sC.play().catch(e=>{}); }, 100);
-
     setTimeout(() => { _b4.play().catch(e => {}); const fi = setInterval(() => { if (_f > 0) _f -= 0.005; else { clearInterval(fi); _tr = false; } }, 16); }, 3000); 
 }
 
@@ -173,23 +166,28 @@ function _dHE() {
 function _dUI() {
     if (_he) { _dHE(); return; }
     if (_ie && _f < 1) {
-        _x.textAlign = 'center'; _x.fillStyle = 'yellow'; _x.font = `bold ${_vh(6)}px 'Courier New'`; _x.fillText('Congratulations! you make it!', _c.width / 2, _vh(25));
-        _x.fillStyle = 'white'; _x.font = `${_vh(5)}px 'Courier New'`; _x.fillText('Press Any Button to Start', _c.width / 2, _vh(50));
-        _x.font = `bold ${_vh(12)}px 'Courier New'`; _x.fillText(`Deaths: ${_dc}`, _c.width / 2, _vh(70));
-        if (_dc <= 1) { _x.fillStyle = '#FFD700'; _x.fillText('UNBELIEVABLE', _c.width / 2, _vh(85)); }
+        _x.textAlign = 'center'; _x.fillStyle = 'yellow'; _x.font = `bold ${_vh(6)}px 'Courier New'`; _x.fillText('Congratulations! you make it!', _c.width / 2, _vh(20));
+        _x.fillStyle = 'white'; _x.font = `${_vh(5)}px 'Courier New'`; _x.fillText('Press Any Button to Start', _c.width / 2, _vh(45));
+        _x.font = `bold ${_vh(12)}px 'Courier New'`; _x.fillText(`Deaths: ${_dc}`, _c.width / 2, _vh(65));
+        if (_dc <= 1) { _x.fillStyle = '#FFD700'; _x.fillText('UNBELIEVABLE', _c.width / 2, _vh(80)); }
     } else if (_sc && _f < 1) {
-        _x.textAlign = 'center'; _x.fillStyle = 'white'; _x.font = `bold ${_vh(6)}px 'Courier New'`; _x.fillText('ENDING CREDITS', _c.width / 2, _vh(20));
-        _x.font = `${_vh(4)}px 'Courier New'`; _x.fillText('Thanks for playing', _c.width / 2, _vh(28));
-        _x.font = `${_vh(5)}px 'Courier New'`; _x.fillText('Press Any Button to Start', _c.width / 2, _vh(50));
-        _x.fillStyle = 'yellow'; _x.font = `${_vh(4)}px 'Courier New'`; _x.fillText('Made By Aview / Completed By You', _c.width / 2, _vh(58));
+        _x.textAlign = 'center'; _x.fillStyle = 'white'; _x.font = `bold ${_vh(5)}px 'Courier New'`; _x.fillText('ENDING CREDITS', _c.width / 2, _vh(12));
+        
+        // MEMO: Display multi-line credit text. Font size reduced by 30% (_vh(2.8)).
+        _x.font = `${_vh(2.8)}px 'Courier New'`;
+        _x.fillStyle = 'white';
+        let sy = _vh(22), lh = _vh(4.2);
+        _CM.forEach((line, i) => { _x.fillText(line, _c.width / 2, sy + (i * lh)); });
+
+        _x.fillStyle = 'yellow'; _x.font = `bold ${_vh(3.2)}px 'Courier New'`;
+        _x.fillText('Press Any Button to Start', _c.width / 2, _vh(2)); 
+
         if (_iA.complete) {
             const iw = _vh(45), ih = (_iA.height / _iA.width) * iw, lx = _c.width / 2 - iw / 2, ly = _vh(95) - ih;
             _x.save();
-            let isVisible = true;
-            if (_tc >= 2) { isVisible = (Date.now() % 2000 < 1000); }
+            let isVisible = true; if (_tc >= 2) { isVisible = (Date.now() % 2000 < 1000); }
             if (isVisible) { _x.shadowBlur = 40; _x.shadowColor = 'yellow'; } else { _x.shadowBlur = 0; }
-            _x.drawImage(_iA, lx, ly, iw, ih);
-            _x.restore();
+            _x.drawImage(_iA, lx, ly, iw, ih); _x.restore();
         }
     } else if (_tr && _f >= 1 && !_ie) {
         _x.fillStyle = 'yellow'; _x.font = `bold ${_vh(7)}px 'Courier New'`; _x.textAlign = 'center'; _x.fillText(`STAGE ${_cs}`, _c.width / 2, _c.height / 2);
@@ -201,7 +199,6 @@ function _dUI() {
             _x.strokeStyle = 'black'; _x.lineWidth = _vh(0.5); _x.strokeRect(bx, by, _bt.w, _bt.h);
             _x.fillStyle = 'black'; _x.font = `bold ${_vh(4)}px 'Courier New'`; _x.textBaseline = 'middle'; _x.fillText('CREDIT', _c.width / 2, by + _bt.h / 2); _x.textBaseline = 'alphabetic';
         }
-        _dTestButtons();
     }
     if (!_ie && !_sc && !_he) { _x.fillStyle = 'white'; _x.font = `bold ${_vh(3)}px 'Courier New'`; _x.textAlign = 'right'; _x.fillText(`Deaths: ${_dc}`, _c.width - _vh(2), _vh(5)); }
 }
@@ -228,8 +225,6 @@ function _hI(e) {
     if (e.type.startsWith('touch')) { 
         const t = e.touches[0] || e.changedTouches[0]; cx = t.clientX - r.left; cy = t.clientY - r.top; 
     } else { cx = e.clientX - r.left; cy = e.clientY - r.top; }
-
-    if (_hTestClick(cx, cy)) return;
 
     if (_he) { 
         if (e.type === 'mousedown' || e.type === 'keydown' || e.type === 'touchstart') { 
