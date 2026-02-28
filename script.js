@@ -140,7 +140,7 @@ function _dHE() {
     if (_c.height - _hy < -_vh(10)) { _x.fillStyle = 'gray'; _x.font = `${_vh(3)}px 'Courier New'`; _x.fillText('Press Any Button to Return', _c.width / 2, _vh(90)); }
 }
 
-/* MEMO: Removed all filter/shadow effects. Applied a manual radial gradient glow behind Aview.png that pulses every 1s */
+/* MEMO: Added static yellow shadow to Aview.png logo in Credit screen */
 function _dUI() {
     if (_he) { _dHE(); return; }
     if (_ie && _f < 1) {
@@ -155,15 +155,8 @@ function _dUI() {
         _x.fillStyle = 'yellow'; _x.font = `${_vh(4)}px 'Courier New'`; _x.fillText('Made By Aview / Completed By You', _c.width / 2, _vh(58));
         if (_iA.complete) {
             const iw = _vh(45), ih = (_iA.height / _iA.width) * iw, lx = _c.width / 2 - iw / 2, ly = _vh(95) - ih;
-            const pulse = (Math.sin(Date.now() / 318) + 1) / 2; // 0 ~ 1 cycle in 1s
             _x.save();
-            // 이미지 뒤에 노란색 음영(광채) 그리기
-            const grad = _x.createRadialGradient(_c.width/2, ly + ih/2, 0, _c.width/2, ly + ih/2, iw);
-            grad.addColorStop(0, `rgba(255, 255, 0, ${pulse * 0.5})`);
-            grad.addColorStop(1, `rgba(255, 255, 0, 0)`);
-            _x.fillStyle = grad;
-            _x.fillRect(lx - iw/2, ly - ih/2, iw * 2, ih * 2);
-            // 원본 이미지 출력
+            _x.shadowBlur = 40; _x.shadowColor = 'yellow';
             _x.drawImage(_iA, lx, ly, iw, ih);
             _x.restore();
         }
@@ -194,14 +187,19 @@ function _gL() {
     requestAnimationFrame(_gL);
 }
 
-/* MEMO: Strict logic separation to reset deathCount only when exiting Ending Screen (_ie) */
+/* MEMO: Strict logic to reset deathCount only when exiting Normal Ending screen (_ie). 
+   Exiting Credit (_sc) or Hidden Ending (_he) preserves deathCount. */
 function _hI(e) {
-    if (e.cancelable) e.preventDefault(); 
-    _tF(); 
+    if (e.cancelable) e.preventDefault(); _tF(); 
     if (e.type === 'mousedown' || e.type === 'touchstart') _md = true;
     if (e.type === 'mouseup' || e.type === 'mouseleave' || e.type === 'touchend') _md = false;
     
-    if (_he) { if (e.type === 'mousedown' || e.type === 'keydown' || e.type === 'touchstart') { _he = false; _sc = false; _cs = 1; _gs = false; _dc = 0; localStorage.setItem('deathCount', 0); document.body.style.backgroundImage = "url('space_back1.gif')"; _sa(); _uB(); _bt.r(); } return; }
+    if (_he) { 
+        if (e.type === 'mousedown' || e.type === 'keydown' || e.type === 'touchstart') { 
+            _he = false; _sc = false; _cs = 1; _gs = false; 
+            document.body.style.backgroundImage = "url('space_back1.gif')"; _sa(); _uB(); _bt.r(); 
+        } return; 
+    }
     
     let cx, cy; const r = _c.getBoundingClientRect();
     if (e.type.startsWith('touch')) { 
@@ -224,20 +222,12 @@ function _hI(e) {
                 const iw = _vh(45), ih = (_iA.height / _iA.width) * iw, lx = _c.width / 2 - iw / 2, ly = _vh(95) - ih; 
                 if (cx > lx && cx < lx + iw && cy > ly && cy < ly + ih) { _he = true; _hy = 0; _uB(); return; } 
             }
-            
-            // 핵심: 엔딩 화면에서만 데스 카운트 리셋
-            if (_ie) { 
-                _dc = 0; 
-                localStorage.setItem('deathCount', 0); 
-            }
-            
-            // 공통 화면 전환 로직
+            if (_ie) { _dc = 0; localStorage.setItem('deathCount', 0); }
             _ie = false; _sc = false; _cs = 1; _gs = false; _pe = false; _f = 0; 
             document.body.style.backgroundImage = "url('space_back1.gif')"; _sa(); _uB(); _bt.r();
         } return;
     }
     if (_tr || _id || _pe) return;
-
     if (e.type === 'mousedown' || e.type === 'touchstart') {
         const bx = _bt.x + _bt.w / 2, by = _bt.y + _bt.h / 2, dx = cx - bx, dy = cy - by, cos = Math.cos(-_bt.a), sin = Math.sin(-_bt.a), rx = dx * cos - dy * sin, ry = dx * sin + dy * cos;
         if (Math.abs(rx) <= _bt.w / 2 && Math.abs(ry) <= _bt.h / 2) {
