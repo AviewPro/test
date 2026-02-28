@@ -103,8 +103,11 @@ function _sNS() {
     }, 16);
 }
 
+/* MEMO: Reset death count on game clear and update localStorage */
 function _sEN() {
-    _ie = true; _tr = true; _f = 1; _sa(); _hc = true; localStorage.setItem('hasCleared', 'true');
+    _ie = true; _tr = true; _f = 1; _sa(); _hc = true; 
+    _dc = 0; localStorage.setItem('deathCount', 0); // 데스 수 초기화 반영
+    localStorage.setItem('hasCleared', 'true');
     _tc++; localStorage.setItem('totalClears', _tc); document.body.style.backgroundImage = "url('space_back2.gif')";
     setTimeout(() => { _b4.play().catch(e => {}); const fi = setInterval(() => { if (_f > 0) _f -= 0.005; else { clearInterval(fi); _tr = false; } }, 16); }, 3000); 
 }
@@ -122,8 +125,9 @@ function _dOB() {
     }
 }
 
+/* MEMO: Hide dashed target boxes during ending or credit screens */
 function _dTB() {
-    if (!_gs && !_tr && !_ie && !_sc || _he) return;
+    if (!_gs || _tr || _ie || _sc || _he) return; // 엔딩/크레딧 중 가이드 박스 숨김 처리 강화
     _x.setLineDash([10, 10]); _x.lineWidth = _vh(0.3);
     const _dB = (tx, ty, ic) => { _x.strokeStyle = (ic || _pe) ? 'yellow' : 'white'; _x.strokeRect(tx, ty, _bt.w, _bt.h); };
     if (_cs === 8) { _dB(_c.width * 0.1, _vh(10), _s8.t); _dB(_c.width * 0.9 - _bt.w, _vh(90) - _bt.h, _s8.b); }
@@ -181,7 +185,7 @@ function _gL() {
     requestAnimationFrame(_gL);
 }
 
-/* MEMO: Touch response optimized to minimize delay on mobile devices */
+/* MEMO: Touch response optimized and bug fixed for death count reset & target box visibility */
 function _hI(e) {
     if (e.cancelable) e.preventDefault(); 
     _tF(); 
